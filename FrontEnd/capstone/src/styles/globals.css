@@ -6,6 +6,8 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,6 +26,21 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.fullHeight{
+  height: 100vh;
+}
+
+
+.blue-background {
+  background-color: #0057FF;
+}
+
+.mt-10vh {
+  margin-top: 10vh;
 }
 
 @layer utilities {

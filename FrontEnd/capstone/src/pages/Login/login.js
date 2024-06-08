@@ -1,10 +1,9 @@
-// src/pages/login.js
-
 import * as React from "react";
+import Link from 'next/link';
 
-function MyComponent() {
+function Login() {
   return (
-    <form className="pl-14 bg-white max-md:pl-5">
+    <form className="pl-14 bg-white max-md:pl-5 fullHeight">
       <section className="flex gap-5 max-md:flex-col max-md:gap-0">
         <aside className="flex flex-col w-[35%] max-md:ml-0 max-md:w-full">
           <header className="flex flex-col mt-14 max-md:mt-10 max-md:max-w-full">
@@ -63,7 +62,9 @@ function MyComponent() {
               className="flex flex-col justify-center px-16 mt-4 text-base tracking-wide leading-7 uppercase bg-black rounded shadow text-white text-opacity-90 max-md:px-5"
             >
               <span className="flex flex-col justify-center px-6 py-2 max-md:px-5 max-md:mx-1">
-                Create New Account
+                <Link href="./signup">
+                  Create New Account
+                </Link>
               </span>
             </button>
           </article>
@@ -86,4 +87,4 @@ function MyComponent() {
   );
 }
 
-export default MyComponent;
+export default Login;
