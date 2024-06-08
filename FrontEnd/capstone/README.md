@@ -2,7 +2,12 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, install npm until seeing the folder *node_modules*:
+```bash
+npm install next react react-dom
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
