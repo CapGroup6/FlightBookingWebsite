@@ -1,0 +1,71 @@
+import React, { useState } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
+import update from 'immutability-helper';
+
+const ItemType = 'RECOMMENDATION';
+
+const DraggableItem = ({ item, index, moveItem }) => {
+  const ref = React.useRef(null);
+  const [, drop] = useDrop({
+    accept: ItemType,
+    hover(draggedItem) {
+      if (draggedItem.index === index) return;
+      moveItem(draggedItem.index, index);
+      draggedItem.index = index;
+    }
+  });
+
+  const [, drag] = useDrag({
+    type: ItemType,
+    item: { index },
+    collect: monitor => ({
+      isDragging: monitor.isDragging()
+    })
+  });
+
+  drag(drop(ref));
+
+  return (
+    <li
+      ref={ref}
+      style={{
+        marginBottom: '5px',
+        padding: '10px',
+        backgroundColor: '#f5f5f5',
+        cursor: 'pointer',
+        border: '1px solid #ddd'
+      }}
+    >
+      {item}
+    </li>
+  );
+};
+
+const Recommendation = () => {
+  const [items, setItems] = useState(['Lowest Price', 'Shortest Duration', 'Check-In Luggage Included']);
+
+  const moveItem = (dragIndex, hoverIndex) => {
+    const draggedItem = items[dragIndex];
+    setItems(
+      update(items, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, draggedItem]
+        ]
+      })
+    );
+  };
+
+  return (
+    <div style={{ margin: '20px' }}>
+      <h3>Recommended</h3>
+      <ol style={{ listStyle: 'none', padding: 0 }}>
+        {items.map((item, index) => (
+          <DraggableItem key={index} index={index} item={item} moveItem={moveItem} />
+        ))}
+      </ol>
+    </div>
+  );
+};
+
+export default Recommendation;
