@@ -1,7 +1,31 @@
 import * as React from "react";
+import { useState } from 'react'; 
 import Link from 'next/link';
+import PreferencePopup from './preferencePopup';
 
 function Login() {
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    if (email && password) {
+      openModal();
+    } else {
+      alert('Please enter email and password');
+    }
+  };
+
   return (
     <form className="pl-14 bg-white max-md:pl-5 fullHeight">
       <section className="flex gap-5 max-md:flex-col max-md:gap-0">
@@ -42,20 +66,25 @@ function Login() {
             <div className="flex flex-col justify-center mt-4"></div>
             <div className="flex flex-col justify-center mt-6"></div>
             
-            <button
-                type="submit"
-                className="flex justify-center mt-4 text-base tracking-wide leading-7 uppercase whitespace-nowrap bg-blue-600 rounded shadow text-white text-opacity-90 max-md:px-5 w-88"
-              >
-                <span className="flex gap-2 justify-center px-36 mt-2 mb-1 text-base tracking-wide leading-7 uppercase rounded shadow text-white text-opacity-90 max-md:px-5 w-88">
-                Login
-                  <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/8ab0078c1548ce39de48ada5bd6cfdf81102c3a39f99cafc86282e592e3b282b?apiKey=e35f36ff56764292afe21d9cb1dc1589&"
-                    alt=""
-                    className="shrink-0 self-center my-auto aspect-[0.82] w-[18px]"
-                  />
-                </span>
+            <div>
+              <button
+                  type="submit"
+                  onClick = {
+                    handleLogin}
+                  className="flex justify-center mt-4 text-base tracking-wide leading-7 uppercase whitespace-nowrap bg-blue-600 rounded shadow text-white text-opacity-90 max-md:px-5 w-88"
+                >
+                  <span className="flex gap-2 justify-center px-36 mt-2 mb-1 text-base tracking-wide leading-7 uppercase rounded shadow text-white text-opacity-90 max-md:px-5 w-88">
+                  Login
+                    <img
+                      loading="lazy"
+                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/8ab0078c1548ce39de48ada5bd6cfdf81102c3a39f99cafc86282e592e3b282b?apiKey=e35f36ff56764292afe21d9cb1dc1589&"
+                      alt=""
+                      className="shrink-0 self-center my-auto aspect-[0.82] w-[18px]"
+                    />
+                  </span>
               </button>
+              <PreferencePopup isOpen={modalIsOpen} onRequestClose={closeModal} />
+            </div>
 
             <button
               type="button"
