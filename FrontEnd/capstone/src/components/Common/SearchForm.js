@@ -1,103 +1,146 @@
 import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import axios from 'axios';
 
-const SearchForm = () => {
-  const [tripType, setTripType] = useState('Round-Trip');
-  const [adultCount, setAdultCount] = useState(1);
-  const [childrenCount, setChildrenCount] = useState(0);
-  const [infantCount, setInfantCount] = useState(0);
-  const [cabinClass, setCabinClass] = useState('Economy');
-  const [from, setFrom] = useState(null);
-  const [to, setTo] = useState(null);
-  const [leaveDate, setLeaveDate] = useState(null);
-  const [backDate, setBackDate] = useState(null);
-  const [options, setOptions] = useState([]);
+const Option = (props) => {
+  return (
+    <components.Option {...props}>
+      {props.data.label}
+      {props.data.customComponent}
+    </components.Option>
+  );
+};
 
-  const fetchLocations = (inputValue) => {
-    // Replace with your API endpoint to fetch locations
-    axios.get(`https://api.example.com/locations?query=${inputValue}`)
-      .then(response => {
-        const locations = response.data.map(location => ({
-          label: location.name,
-          value: location.code,
+const SearchForm = ({ setResults }) => {
+  const [origin, setOrigin] = useState('');
+  const [destination, setDestination] = useState('');
+  const [departureDate, setDepartureDate] = useState('');
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [infants, setInfants] = useState(0);
+  const [destinationOptions, setDestinationOptions] = useState([]);
+
+  const handleDestinationChange = async (inputValue) => {
+    if (inputValue.length > 2) {
+      try {
+        const response = await axios.get('http://localhost:8080/api/locations', {
+          params: { keyword: inputValue },
+        });
+        const options = response.data.map(location => ({
+          label: `${location.name} (${location.iataCode})`,
+          value: location.iataCode,
         }));
-        setOptions(locations);
-      });
+        setDestinationOptions(options);
+      } catch (error) {
+        console.error('Error fetching airport data', error);
+      }
+    }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get('http://localhost:8080/api/flights', {
+        params: {
+          origin,
+          destination,
+          departureDate,
+          adults,
+          children,
+          infants,
+        }
+      });
+      setResults(response.data);
+    } catch (error) {
+      console.error('Error fetching flights', error);
+    }
+  };
+
+  const passengerOptions = [
+    {
+      label: 'Adults',
+      value: 'adults',
+      customComponent: (
+        <div style={styles.counter}>
+          <button type="button" onClick={() => setAdults(Math.max(1, adults - 1))}>-</button>
+          <span>{adults}</span>
+          <button type="button" onClick={() => setAdults(adults + 1)}>+</button>
+        </div>
+      )
+    },
+    {
+      label: 'Children',
+      value: 'children',
+      customComponent: (
+        <div style={styles.counter}>
+          <button type="button" onClick={() => setChildren(Math.max(0, children - 1))}>-</button>
+          <span>{children}</span>
+          <button type="button" onClick={() => setChildren(children + 1)}>+</button>
+        </div>
+      )
+    },
+    {
+      label: 'Infants',
+      value: 'infants',
+      customComponent: (
+        <div style={styles.counter}>
+          <button type="button" onClick={() => setInfants(Math.max(0, infants - 1))}>-</button>
+          <span>{infants}</span>
+          <button type="button" onClick={() => setInfants(infants + 1)}>+</button>
+        </div>
+      )
+    }
+  ];
+
   return (
-    <div className="search-form">
-      <div className="trip-type">
-        <label>Trip Type</label>
-        <select value={tripType} onChange={(e) => setTripType(e.target.value)}>
-          <option value="Round-Trip">Round-Trip</option>
-          <option value="One-Way">One-Way</option>
-        </select>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>From:</label>
+        <input type="text" value={origin} onChange={(e) => setOrigin(e.target.value)} required />
       </div>
-      <div className="passengers">
-        <label>Adults</label>
-        <select value={adultCount} onChange={(e) => setAdultCount(e.target.value)}>
-          {[...Array(10).keys()].map(n => <option key={n} value={n}>{n}</option>)}
-        </select>
-        <label>Children</label>
-        <select value={childrenCount} onChange={(e) => setChildrenCount(e.target.value)}>
-          {[...Array(10).keys()].map(n => <option key={n} value={n}>{n}</option>)}
-        </select>
-        <label>Infants</label>
-        <select value={infantCount} onChange={(e) => setInfantCount(e.target.value)}>
-          {[...Array(10).keys()].map(n => <option key={n} value={n}>{n}</option>)}
-        </select>
-      </div>
-      <div className="cabin-class">
-        <label>Cabin Class</label>
-        <select value={cabinClass} onChange={(e) => setCabinClass(e.target.value)}>
-          <option value="Economy">Economy</option>
-          <option value="Business">Business</option>
-          <option value="First Class">First Class</option>
-        </select>
-      </div>
-      <div className="locations">
+      <div>
+        <label>To:</label>
         <Select
-          placeholder="From"
-          value={from}
-          onChange={setFrom}
-          onInputChange={fetchLocations}
-          options={options}
+          placeholder="Select destination"
+          value={destinationOptions.find(option => option.value === destination)}
+          onChange={(selectedOption) => setDestination(selectedOption.value)}
+          onInputChange={handleDestinationChange}
+          options={destinationOptions}
         />
+      </div>
+      <div>
+        <label>Leave Date:</label>
+        <input type="date" value={departureDate} onChange={(e) => setDepartureDate(e.target.value)} required />
+      </div>
+      <div>
+        <label>Passengers:</label>
         <Select
-          placeholder="To"
-          value={to}
-          onChange={setTo}
-          onInputChange={fetchLocations}
-          options={options}
+          components={{ Option }}
+          options={passengerOptions}
+          isMulti
+          closeMenuOnSelect={false}
+          hideSelectedOptions={false}
         />
       </div>
-      <div className="dates">
-        <DatePicker
-          selected={leaveDate}
-          onChange={(date) => setLeaveDate(date)}
-          placeholderText="Leave Date"
-        />
-        <DatePicker
-          selected={backDate}
-          onChange={(date) => setBackDate(date)}
-          placeholderText="Back Date"
-        />
-      </div>
-      <div className="extras">
-        <label>
-          <input type="checkbox" /> Add nearby airport
-        </label>
-        <label>
-          <input type="checkbox" /> Add nearby airport
-        </label>
-      </div>
-      <button className="search-btn">Search</button>
-    </div>
+      <button type="submit">Search</button>
+    </form>
   );
+};
+
+const styles = {
+  counter: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  button: {
+    padding: '5px 10px',
+    margin: '0 5px',
+    backgroundColor: '#007BFF',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer'
+  }
 };
 
 export default SearchForm;
