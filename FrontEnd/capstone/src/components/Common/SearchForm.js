@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Select, { components } from 'react-select';
-import apiClient from '../api/axiosConfig';
+import { fetchLocations } from '../../api/fetchLocations';
+import { fetchFlights } from '../../api/fetchFlights';
 
 const Option = (props) => {
   return (
@@ -11,18 +12,12 @@ const Option = (props) => {
   );
 };
 
-const getDefaultFutureDate = (daysInFuture) => {
-  const date = new Date();
-  date.setDate(date.getDate() + daysInFuture);
-  return date.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-};
-
 const SearchForm = ({ setResults }) => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
-  const [departureDate, setDepartureDate] = useState(getDefaultFutureDate(1)); // Default to tomorrow
-  const [returnDate, setReturnDate] = useState(getDefaultFutureDate(7)); // Default to a week from now
+  const [origin, setOrigin] = useState(null);
+  const [destination, setDestination] = useState(null);
+  const [departureDate, setDepartureDate] = useState(new Date().toISOString().split('T')[0]);
+  const [returnDate, setReturnDate] = useState(new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -30,61 +25,33 @@ const SearchForm = ({ setResults }) => {
   const [addNearbyAirport, setAddNearbyAirport] = useState(false);
   const [destinationOptions, setDestinationOptions] = useState([]);
   const [originOptions, setOriginOptions] = useState([]);
+  const [apiResults, setApiResults] = useState([]); // Define apiResults in state
 
-  const handleDestinationChange = async (inputValue) => {
-    if (inputValue.length > 2) {
-      try {
-        const response = await apiClient.get('/locations', {
-          params: { keyword: inputValue },
-        });
-        const options = response.data.map(location => ({
-          label: `${location.name} (${location.iataCode})`,
-          value: location.iataCode,
-        }));
-        setDestinationOptions(options);
-      } catch (error) {
-        console.error('Error fetching airport data', error);
-      }
-    }
+  const handleDestinationInputChange = async (inputValue) => {
+    const options = await fetchLocations(inputValue);
+    setDestinationOptions(options);
   };
 
-  const handleOriginChange = async (inputValue) => {
-    if (inputValue.length > 2) {
-      try {
-        const response = await apiClient.get('/locations', {
-          params: { keyword: inputValue },
-        });
-        const options = response.data.map(location => ({
-          label: `${location.name} (${location.iataCode})`,
-          value: location.iataCode,
-        }));
-        setOriginOptions(options);
-      } catch (error) {
-        console.error('Error fetching airport data', error);
-      }
-    }
+  const handleOriginInputChange = async (inputValue) => {
+    const options = await fetchLocations(inputValue);
+    setOriginOptions(options);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await apiClient.get('/flights', {
-        params: {
-          origin,
-          destination,
-          departureDate,
-          returnDate: tripType.value === 'Round-Trip' ? returnDate : '',
-          adults,
-          children,
-          infants,
-          cabinClass: cabinClass.value,
-          addNearbyAirport,
-        }
-      });
-      setResults(response.data);
-    } catch (error) {
-      console.error('Error fetching flights', error);
-    }
+    const params = {
+      origin: origin ? origin.value : '',
+      destination: destination ? destination.value : '',
+      departureDate,
+      returnDate: tripType.value === 'Round-Trip' ? returnDate : '',
+      adults,
+      children,
+      infants,
+      cabinClass: cabinClass.value,
+      addNearbyAirport,
+    };
+    const results = await fetchFlights(params);
+    setApiResults(results); // Update apiResults with fetched data
   };
 
   const tripTypeOptions = [
@@ -166,22 +133,22 @@ const SearchForm = ({ setResults }) => {
         <div style={styles.inputWrapper}>
           <label style={styles.label}>From:</label>
           <Select
-            placeholder="Enter origin"
-            value={originOptions.find(option => option.value === origin)}
-            onChange={(selectedOption) => setOrigin(selectedOption.value)}
-            onInputChange={handleOriginChange}
+            value={origin}
+            onChange={setOrigin}
+            onInputChange={handleOriginInputChange}
             options={originOptions}
+            placeholder="Enter origin"
             styles={selectStyles}
           />
         </div>
         <div style={styles.inputWrapper}>
           <label style={styles.label}>To:</label>
           <Select
-            placeholder="Enter destination"
-            value={destinationOptions.find(option => option.value === destination)}
-            onChange={(selectedOption) => setDestination(selectedOption.value)}
-            onInputChange={handleDestinationChange}
+            value={destination}
+            onChange={setDestination}
+            onInputChange={handleDestinationInputChange}
             options={destinationOptions}
+            placeholder="Enter destination"
             styles={selectStyles}
           />
         </div>
@@ -203,35 +170,45 @@ const SearchForm = ({ setResults }) => {
           <label style={styles.label}>Add nearby airport</label>
         </div>
       </div>
+      <div>
+        <h3>Results:</h3>
+        <pre>{JSON.stringify(apiResults, null, 2)}</pre> {/* Display API results */}
+      </div>
     </form>
   );
 };
+
 
 const styles = {
   form: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: '20px'
+    marginBottom: '20px',
+    color: '#000' // 确保文字为黑色
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-around',
+    width: '100%',
     marginBottom: '10px'
   },
   inputWrapper: {
     display: 'flex',
     flexDirection: 'column',
-    marginRight: '10px'
+    alignItems: 'center',
+    marginBottom: '10px'
   },
   label: {
-    marginBottom: '5px'
+    marginBottom: '5px',
+    color: '#000' // 确保标签文字为黑色
   },
   input: {
-    padding: '5px',
-    borderRadius: '3px',
-    border: '1px solid #ccc'
+    padding: '10px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    width: '200px'
   },
   button: {
     padding: '10px 20px',
@@ -247,15 +224,41 @@ const styles = {
   },
   counter: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    gap: '10px'
   }
 };
 
 const selectStyles = {
   control: (provided) => ({
     ...provided,
-    minWidth: '200px'
+    width: '200px',
+    marginBottom: '10px',
+    color: '#000' // 确保选项文字为黑色
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: '#000' // 确保单选选项文字为黑色
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: '#000' // 确保占位符文字为黑色
+  }),
+  multiValue: (provided) => ({
+    ...provided,
+    backgroundColor: '#f0f0f0',
+    color: '#000' // 确保多选选项文字为黑色
+  }),
+  multiValueLabel: (provided) => ({
+    ...provided,
+    color: '#000' // 确保多选标签文字为黑色
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    color: state.isSelected ? '#000' : '#000', // 确保选项文字为黑色
+    backgroundColor: state.isSelected ? '#e0e0e0' : '#fff' // 设置选中和未选中的背景色
   })
 };
+
 
 export default SearchForm;
