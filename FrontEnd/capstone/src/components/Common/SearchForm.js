@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Select, { components } from 'react-select';
-import axios from 'axios';
+import apiClient from '../api/axiosConfig';
 
 const Option = (props) => {
   return (
@@ -11,12 +11,18 @@ const Option = (props) => {
   );
 };
 
+const getDefaultFutureDate = (daysInFuture) => {
+  const date = new Date();
+  date.setDate(date.getDate() + daysInFuture);
+  return date.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+};
+
 const SearchForm = ({ setResults }) => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
-  const [departureDate, setDepartureDate] = useState('');
-  const [returnDate, setReturnDate] = useState('');
+  const [departureDate, setDepartureDate] = useState(getDefaultFutureDate(1)); // Default to tomorrow
+  const [returnDate, setReturnDate] = useState(getDefaultFutureDate(7)); // Default to a week from now
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
@@ -28,7 +34,7 @@ const SearchForm = ({ setResults }) => {
   const handleDestinationChange = async (inputValue) => {
     if (inputValue.length > 2) {
       try {
-        const response = await axios.get('http://localhost:8080/api/locations', {
+        const response = await apiClient.get('/locations', {
           params: { keyword: inputValue },
         });
         const options = response.data.map(location => ({
@@ -45,7 +51,7 @@ const SearchForm = ({ setResults }) => {
   const handleOriginChange = async (inputValue) => {
     if (inputValue.length > 2) {
       try {
-        const response = await axios.get('http://localhost:8080/api/locations', {
+        const response = await apiClient.get('/locations', {
           params: { keyword: inputValue },
         });
         const options = response.data.map(location => ({
@@ -62,7 +68,7 @@ const SearchForm = ({ setResults }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get('http://localhost:8080/api/flights', {
+      const response = await apiClient.get('/flights', {
         params: {
           origin,
           destination,
@@ -201,44 +207,31 @@ const SearchForm = ({ setResults }) => {
   );
 };
 
-
 const styles = {
   form: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: '20px',
-    borderRadius: '5px',
-    backgroundColor: 'white',
-    boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-    width: '100%',
-    maxWidth: '800px',
-    margin: '20px auto'
+    marginBottom: '20px'
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    alignItems: 'center',
     marginBottom: '10px'
-  },
-  selectWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    marginRight: '10px',
-    flex: '1'
   },
   inputWrapper: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start',
-    marginRight: '10px',
-    flex: '1'
+    marginRight: '10px'
   },
-  counter: {
-    display: 'flex',
-    alignItems: 'center',
+  label: {
+    marginBottom: '5px'
+  },
+  input: {
+    padding: '5px',
+    borderRadius: '3px',
+    border: '1px solid #ccc'
   },
   button: {
     padding: '10px 20px',
@@ -246,48 +239,23 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '5px',
-    cursor: 'pointer',
-    marginLeft: '10px',
-    alignSelf: 'center'
+    cursor: 'pointer'
   },
   checkboxWrapper: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'center'
   },
-  label: {
-    color: 'black',
-    marginBottom: '5px'
-  },
-  input: {
-    padding: '5px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    width: '100%'
-  },
-  select: {
-    padding: '5px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    width: '100%'
+  counter: {
+    display: 'flex',
+    alignItems: 'center'
   }
 };
 
 const selectStyles = {
-  control: (base) => ({
-    ...base,
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    color: 'black'
-  }),
-  option: (base) => ({
-    ...base,
-    color: 'black'
-  }),
-  singleValue: (base) => ({
-    ...base,
-    color: 'black'
+  control: (provided) => ({
+    ...provided,
+    minWidth: '200px'
   })
 };
-
 
 export default SearchForm;
