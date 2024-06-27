@@ -11,6 +11,8 @@ const Option = (props) => {
   );
 };
 
+const MultiValueRemove = () => null; // Hides the remove "x" button
+
 const PassengerCount = ({ adults, setAdults, children, setChildren, infants, setInfants }) => {
   const passengerOptions = [
     {
@@ -51,7 +53,7 @@ const PassengerCount = ({ adults, setAdults, children, setChildren, infants, set
   return (
     <Select
       placeholder={`Adults: ${adults}, Children: ${children}, Infants: ${infants}`}
-      components={{ Option }}
+      components={{ Option, MultiValueRemove }} // Hides the "x" button
       options={passengerOptions}
       isMulti
       closeMenuOnSelect={false}
@@ -60,23 +62,29 @@ const PassengerCount = ({ adults, setAdults, children, setChildren, infants, set
       styles={{
         control: (provided) => ({
           ...provided,
-          width: '300px',
-          marginBottom: '10px',
-          color: '#000',
+          border: 'none',
+          boxShadow: 'none',
+          minHeight: 'auto',
+          '&:hover': {
+            border: 'none'
+          },
+          width: '180px', // Adjust width to fit content
         }),
-        multiValue: (provided) => ({
-          ...provided,
-          backgroundColor: '#f0f0f0',
-          color: '#000'
+        valueContainer: (base) => ({
+          ...base,
+          padding: '0',
+          fontSize: '0.875rem', // Adjust font size
         }),
-        multiValueLabel: (provided) => ({
-          ...provided,
-          color: '#000'
+        input: (base) => ({
+          ...base,
+          margin: '0'
         }),
-        option: (provided, state) => ({
-          ...provided,
-          color: state.isSelected ? '#000' : '#000',
-          backgroundColor: state.isSelected ? '#e0e0e0' : '#fff'
+        indicatorSeparator: (base) => ({
+          display: 'none'
+        }),
+        indicatorsContainer: (base) => ({
+          ...base,
+          padding: '0'
         })
       }}
     />

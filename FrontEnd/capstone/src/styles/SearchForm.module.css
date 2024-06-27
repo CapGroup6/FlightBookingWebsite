@@ -1,107 +1,67 @@
-.selectStyle {
-    font-size: 16px;
-    color: #000;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-    color: #000; /* 确保文字为黑色 */
-  }
-  
-  .row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  
-  .inputWrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .label {
-    margin-bottom: 5px;
-    color: #000; /* 确保标签文字为黑色 */
-  }
-  
-  .input {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 200px;
-  }
-  
-  .button {
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-  }
-  
-  .button:hover {
-    background-color: #0056b3;
-  }
-  
-  .button:active {
-    background-color: #004085;
-    transform: scale(0.95);
-  }
-  
-  
-  .checkboxWrapper {
-    display: flex;
-    align-items: center;
-  }
-  
-  .counter {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  /* Select styles */
-  .react-select__control {
-    width: 200px;
-    margin-bottom: 10px;
-    color: #000; /* 确保选项文字为黑色 */
-  }
-  
-  .react-select__single-value {
-    color: #000; /* 确保单选选项文字为黑色 */
-  }
-  
-  .react-select__placeholder {
-    color: #000; /* 确保占位符文字为黑色 */
-  }
-  
-  .react-select__multi-value {
-    background-color: #f0f0f0;
-    color: #000; /* 确保多选选项文字为黑色 */
-  }
-  
-  .react-select__multi-value__label {
-    color: #000; /* 确保多选标签文字为黑色 */
-  }
-  
-  .react-select__option {
-    color: #000; /* 确保选项文字为黑色 */
-  }
-  
-  .react-select__option--is-selected {
-    background-color: #e0e0e0; /* 设置选中背景色 */
-  }
-  
+.noBorder__control {
+  border: none !important;
+  background: none;
+  box-shadow: none !important;
+  font-size: 0.875rem; /* 调整字体大小 */
+  color: #333; /* 调整文字颜色 */
+  padding: 0; /* 移除内边距 */
+  min-width: auto; /* 移除最小宽度 */
+  display: inline-flex; /* 使其与图标齐平 */
+  align-items: center; /* 垂直居中 */
+  width: 150px; /* 确保宽度合适 */
+}
+
+.noBorder__indicator-separator {
+  display: none;
+}
+
+.noBorder__dropdown-indicator {
+  padding: 0;
+}
+
+.noBorder__menu {
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 11px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.noBorder__option {
+  padding: 8px 12px;
+}
+
+.noBorder__option--is-selected {
+  background-color: #f0f0f0;
+}
+
+.noBorder__option--is-focused {
+  background-color: #e0e0e0;
+}
+
+
+
+
+
+.dateSelector {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.dateInputWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.dateInput {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  width: 150px;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
