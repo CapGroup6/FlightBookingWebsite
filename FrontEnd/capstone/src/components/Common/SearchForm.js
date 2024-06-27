@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select, { components } from 'react-select';
-import { fetchLocations } from '../../api/fetchLocations';
-import { fetchFlights } from '../../api/fetchFlights';
+import axios from 'axios';
+import styles from '../../styles/SearchForm.module.css'; 
 
 const Option = (props) => {
   return (
@@ -15,6 +15,8 @@ const Option = (props) => {
 const SearchForm = ({ setResults }) => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
   const [origin, setOrigin] = useState(null);
+  const [userInput, setUserInput] = useState('');
+  const [options, setOptions] = useState([]);
   const [destination, setDestination] = useState(null);
   const [departureDate, setDepartureDate] = useState(new Date().toISOString().split('T')[0]);
   const [returnDate, setReturnDate] = useState(new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]);
@@ -25,17 +27,27 @@ const SearchForm = ({ setResults }) => {
   const [addNearbyAirport, setAddNearbyAirport] = useState(false);
   const [destinationOptions, setDestinationOptions] = useState([]);
   const [originOptions, setOriginOptions] = useState([]);
-  const [apiResults, setApiResults] = useState([]); // Define apiResults in state
+  const [apiResults, setApiResults] = useState([]);
 
-  const handleDestinationInputChange = async (inputValue) => {
-    const options = await fetchLocations(inputValue);
-    setDestinationOptions(options);
+  const handleInputChange = (e) => {
+    setUserInput(e.target.value);
   };
 
-  const handleOriginInputChange = async (inputValue) => {
-    const options = await fetchLocations(inputValue);
-    setOriginOptions(options);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (userInput) {
+          const option = await axios.get(`http://localhost:8080/api/locations?keyword=${userInput}`);
+          console.log(option.data);
+          setOptions(option.data); 
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [userInput]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,7 +63,7 @@ const SearchForm = ({ setResults }) => {
       addNearbyAirport,
     };
     const results = await fetchFlights(params);
-    setApiResults(results); // Update apiResults with fetched data
+    setApiResults(results);
   };
 
   const tripTypeOptions = [
@@ -71,7 +83,7 @@ const SearchForm = ({ setResults }) => {
       label: 'Adults',
       value: 'adults',
       customComponent: (
-        <div style={styles.counter}>
+        <div className={styles.counter}>
           <button type="button" onClick={() => setAdults(Math.max(1, adults - 1))}>-</button>
           <span>{adults}</span>
           <button type="button" onClick={() => setAdults(adults + 1)}>+</button>
@@ -82,7 +94,7 @@ const SearchForm = ({ setResults }) => {
       label: 'Children',
       value: 'children',
       customComponent: (
-        <div style={styles.counter}>
+        <div className={styles.counter}>
           <button type="button" onClick={() => setChildren(Math.max(0, children - 1))}>-</button>
           <span>{children}</span>
           <button type="button" onClick={() => setChildren(children + 1)}>+</button>
@@ -93,7 +105,7 @@ const SearchForm = ({ setResults }) => {
       label: 'Infants',
       value: 'infants',
       customComponent: (
-        <div style={styles.counter}>
+        <div className={styles.counter}>
           <button type="button" onClick={() => setInfants(Math.max(0, infants - 1))}>-</button>
           <span>{infants}</span>
           <button type="button" onClick={() => setInfants(infants + 1)}>+</button>
@@ -103,71 +115,64 @@ const SearchForm = ({ setResults }) => {
   ];
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
-      <div style={styles.row}>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.row}>
         <Select
+          classNamePrefix="react-select"
           placeholder="Round-Trip"
           value={tripType}
           onChange={setTripType}
           options={tripTypeOptions}
-          styles={selectStyles}
         />
         <Select
+          classNamePrefix="react-select"
           placeholder="Economy"
           value={cabinClass}
           onChange={setCabinClass}
           options={cabinClassOptions}
-          styles={selectStyles}
         />
         <Select
+          classNamePrefix="react-select"
           placeholder={`Adults: ${adults}, Children: ${children}, Infants: ${infants}`}
           components={{ Option }}
           options={passengerOptions}
           isMulti
           closeMenuOnSelect={false}
           hideSelectedOptions={false}
-          styles={selectStyles}
         />
       </div>
-      <div style={styles.row}>
-        <div style={styles.inputWrapper}>
-          <label style={styles.label}>From:</label>
-          <Select
-            value={origin}
-            onChange={setOrigin}
-            onInputChange={handleOriginInputChange}
-            options={originOptions}
-            placeholder="Enter origin"
-            styles={selectStyles}
+      <div className={styles.row}>
+        <div className={styles.inputWrapper}>
+          <input
+          type="text"
+          value={userInput}
+          onChange={handleInputChange}
+          placeholder="Leaving From"
           />
         </div>
-        <div style={styles.inputWrapper}>
-          <label style={styles.label}>To:</label>
-          <Select
-            value={destination}
-            onChange={setDestination}
-            onInputChange={handleDestinationInputChange}
-            options={destinationOptions}
-            placeholder="Enter destination"
-            styles={selectStyles}
-          />
-        </div>
-        <div style={styles.inputWrapper}>
-          <label style={styles.label}>Leave Date:</label>
-          <input type="date" value={departureDate} onChange={(e) => setDepartureDate(e.target.value)} required style={styles.input} />
+        <select className={styles.selectStyle}>
+          {options.map((option, index) => (
+            <option key={index} value={option.iataCode}>
+              {option.name}
+            </option>
+          ))}
+        </select>
+        <div className={styles.inputWrapper}>
+          <label className={styles.label}>Leave Date:</label>
+          <input type="date" value={departureDate} onChange={(e) => setDepartureDate(e.target.value)} required className={styles.input} />
         </div>
         {tripType.value === 'Round-Trip' && (
-          <div style={styles.inputWrapper}>
-            <label style={styles.label}>Back Date:</label>
-            <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} required style={styles.input} />
+          <div className={styles.inputWrapper}>
+            <label className={styles.label}>Back Date:</label>
+            <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} required className={styles.input} />
           </div>
         )}
-        <button type="submit" style={styles.button}>Search</button>
+        <button type="submit" className={styles.button}>Search</button>
       </div>
-      <div style={styles.row}>
-        <div style={styles.checkboxWrapper}>
+      <div className={styles.row}>
+        <div className={styles.checkboxWrapper}>
           <input type="checkbox" checked={addNearbyAirport} onChange={() => setAddNearbyAirport(!addNearbyAirport)} />
-          <label style={styles.label}>Add nearby airport</label>
+          <label className={styles.label}>Add nearby airport</label>
         </div>
       </div>
       <div>
@@ -177,88 +182,5 @@ const SearchForm = ({ setResults }) => {
     </form>
   );
 };
-
-
-const styles = {
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: '20px',
-    color: '#000' // 确保文字为黑色
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginBottom: '10px'
-  },
-  inputWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: '10px'
-  },
-  label: {
-    marginBottom: '5px',
-    color: '#000' // 确保标签文字为黑色
-  },
-  input: {
-    padding: '10px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    width: '200px'
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#007BFF',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer'
-  },
-  checkboxWrapper: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  counter: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  }
-};
-
-const selectStyles = {
-  control: (provided) => ({
-    ...provided,
-    width: '200px',
-    marginBottom: '10px',
-    color: '#000' // 确保选项文字为黑色
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    color: '#000' // 确保单选选项文字为黑色
-  }),
-  placeholder: (provided) => ({
-    ...provided,
-    color: '#000' // 确保占位符文字为黑色
-  }),
-  multiValue: (provided) => ({
-    ...provided,
-    backgroundColor: '#f0f0f0',
-    color: '#000' // 确保多选选项文字为黑色
-  }),
-  multiValueLabel: (provided) => ({
-    ...provided,
-    color: '#000' // 确保多选标签文字为黑色
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    color: state.isSelected ? '#000' : '#000', // 确保选项文字为黑色
-    backgroundColor: state.isSelected ? '#e0e0e0' : '#fff' // 设置选中和未选中的背景色
-  })
-};
-
 
 export default SearchForm;

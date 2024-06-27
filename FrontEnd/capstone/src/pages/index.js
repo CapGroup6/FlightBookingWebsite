@@ -1,8 +1,7 @@
 import * as React from "react";
 import Header from '../components/Common/Header';
 import SearchForm from '../components/Common/SearchForm';
-import ChatBot from '../components/Common/ChatBot';
-import Features from '../components/SearchPage/Features';
+
 
 function Home() {
   return (
@@ -32,10 +31,7 @@ function Home() {
           <SearchForm />
         </section>
       </div>
-      <div style={styles.bottomContainer}>
-        <ChatBot />
-        <Features />
-      </div>
+
     </div>
   );
 }

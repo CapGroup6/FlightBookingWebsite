@@ -5,9 +5,7 @@ export const fetchLocations = async (keyword) => {
 
   if (keyword.length > 2) {
     try {
-      const response = await apiClient.get('/locations', {
-        params: { keyword },
-      });
+      const response = await axios.get('http://localhost:8080/api/locations?keyword=test');
       console.log('Response data:', response.data); // Log response data
 
       return response.data.map(location => ({
