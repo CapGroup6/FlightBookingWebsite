@@ -1,23 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import Select, { components } from 'react-select';
+import React, { useState } from 'react';
+import DateSelector from '../searchForm/DateSelector';
+import LocationSelector from '../searchForm/LocationSelector';
+import TripTypeAndCabinClass from '../searchForm/TripTypeAndCabinClass';
+import PassengerCount from '../searchForm/PassengerCount';
+import styles from '../../styles/SearchForm.module.css';
 import axios from 'axios';
-import styles from '../../styles/SearchForm.module.css'; 
-
-const Option = (props) => {
-  return (
-    <components.Option {...props}>
-      {props.data.label}
-      {props.data.customComponent}
-    </components.Option>
-  );
-};
 
 const SearchForm = ({ setResults }) => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
-  const [origin, setOrigin] = useState(null);
-  const [userInput, setUserInput] = useState('');
-  const [options, setOptions] = useState([]);
+  const [departure, setDeparture] = useState(null);
   const [destination, setDestination] = useState(null);
+  const [userInputDeparture, setUserInputDeparture] = useState('');
+  const [userInputDestination, setUserInputDestination] = useState('');
   const [departureDate, setDepartureDate] = useState(new Date().toISOString().split('T')[0]);
   const [returnDate, setReturnDate] = useState(new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]);
   const [adults, setAdults] = useState(1);
@@ -25,35 +19,17 @@ const SearchForm = ({ setResults }) => {
   const [infants, setInfants] = useState(0);
   const [cabinClass, setCabinClass] = useState({ label: 'Economy', value: 'Economy' });
   const [addNearbyAirport, setAddNearbyAirport] = useState(false);
-  const [destinationOptions, setDestinationOptions] = useState([]);
-  const [originOptions, setOriginOptions] = useState([]);
   const [apiResults, setApiResults] = useState([]);
-
-  const handleInputChange = (e) => {
-    setUserInput(e.target.value);
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (userInput) {
-          const option = await axios.get(`http://localhost:8080/api/locations?keyword=${userInput}`);
-          console.log(option.data);
-          setOptions(option.data); 
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, [userInput]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (departure && destination && departure.cityName === destination.cityName) {
+      alert('Departure and destination cannot be the same city.');
+      return;
+    }
     const params = {
-      origin: origin ? origin.value : '',
-      destination: destination ? destination.value : '',
+      departure: departure ? departure.iataCodes : '',
+      destination: destination ? destination.iataCodes : '',
       departureDate,
       returnDate: tripType.value === 'Round-Trip' ? returnDate : '',
       adults,
@@ -66,118 +42,61 @@ const SearchForm = ({ setResults }) => {
     setApiResults(results);
   };
 
-  const tripTypeOptions = [
-    { label: 'Round-Trip', value: 'Round-Trip' },
-    { label: 'One-Way', value: 'One-Way' }
-  ];
-
-  const cabinClassOptions = [
-    { label: 'Economy', value: 'Economy' },
-    { label: 'Premium Economy', value: 'Premium_Economy' },
-    { label: 'Business', value: 'Business' },
-    { label: 'First', value: 'First' }
-  ];
-
-  const passengerOptions = [
-    {
-      label: 'Adults',
-      value: 'adults',
-      customComponent: (
-        <div className={styles.counter}>
-          <button type="button" onClick={() => setAdults(Math.max(1, adults - 1))}>-</button>
-          <span>{adults}</span>
-          <button type="button" onClick={() => setAdults(adults + 1)}>+</button>
-        </div>
-      )
-    },
-    {
-      label: 'Children',
-      value: 'children',
-      customComponent: (
-        <div className={styles.counter}>
-          <button type="button" onClick={() => setChildren(Math.max(0, children - 1))}>-</button>
-          <span>{children}</span>
-          <button type="button" onClick={() => setChildren(children + 1)}>+</button>
-        </div>
-      )
-    },
-    {
-      label: 'Infants',
-      value: 'infants',
-      customComponent: (
-        <div className={styles.counter}>
-          <button type="button" onClick={() => setInfants(Math.max(0, infants - 1))}>-</button>
-          <span>{infants}</span>
-          <button type="button" onClick={() => setInfants(infants + 1)}>+</button>
-        </div>
-      )
+  const fetchFlights = async (params) => {
+    try {
+      const response = await axios.post('http://localhost:8080/api/flights', params);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching flights:', error);
+      return [];
     }
-  ];
+  };
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <div className={styles.row}>
-        <Select
-          classNamePrefix="react-select"
-          placeholder="Round-Trip"
-          value={tripType}
-          onChange={setTripType}
-          options={tripTypeOptions}
-        />
-        <Select
-          classNamePrefix="react-select"
-          placeholder="Economy"
-          value={cabinClass}
-          onChange={setCabinClass}
-          options={cabinClassOptions}
-        />
-        <Select
-          classNamePrefix="react-select"
-          placeholder={`Adults: ${adults}, Children: ${children}, Infants: ${infants}`}
-          components={{ Option }}
-          options={passengerOptions}
-          isMulti
-          closeMenuOnSelect={false}
-          hideSelectedOptions={false}
-        />
-      </div>
-      <div className={styles.row}>
-        <div className={styles.inputWrapper}>
-          <input
-          type="text"
-          value={userInput}
-          onChange={handleInputChange}
-          placeholder="Leaving From"
-          />
-        </div>
-        <select className={styles.selectStyle}>
-          {options.map((option, index) => (
-            <option key={index} value={option.iataCode}>
-              {option.name}
-            </option>
-          ))}
-        </select>
-        <div className={styles.inputWrapper}>
-          <label className={styles.label}>Leave Date:</label>
-          <input type="date" value={departureDate} onChange={(e) => setDepartureDate(e.target.value)} required className={styles.input} />
-        </div>
-        {tripType.value === 'Round-Trip' && (
-          <div className={styles.inputWrapper}>
-            <label className={styles.label}>Back Date:</label>
-            <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} required className={styles.input} />
-          </div>
-        )}
-        <button type="submit" className={styles.button}>Search</button>
-      </div>
+      <TripTypeAndCabinClass
+        tripType={tripType}
+        setTripType={setTripType}
+        cabinClass={cabinClass}
+        setCabinClass={setCabinClass}
+      />
+      <PassengerCount
+        adults={adults}
+        setAdults={setAdults}
+        children={children}
+        setChildren={setChildren}
+        infants={infants}
+        setInfants={setInfants}
+      />
+      <LocationSelector
+        userInput={userInputDeparture}
+        setUserInput={setUserInputDeparture}
+        setLocation={setDeparture}
+        locationType="departure"
+      />
+      <LocationSelector
+        userInput={userInputDestination}
+        setUserInput={setUserInputDestination}
+        setLocation={setDestination}
+        locationType="destination"
+      />
+      <DateSelector
+        tripType={tripType}
+        departureDate={departureDate}
+        setDepartureDate={setDepartureDate}
+        returnDate={returnDate}
+        setReturnDate={setReturnDate}
+      />
       <div className={styles.row}>
         <div className={styles.checkboxWrapper}>
           <input type="checkbox" checked={addNearbyAirport} onChange={() => setAddNearbyAirport(!addNearbyAirport)} />
           <label className={styles.label}>Add nearby airport</label>
         </div>
       </div>
+      <button type="submit" className={styles.button}>Search</button>
       <div>
         <h3>Results:</h3>
-        <pre>{JSON.stringify(apiResults, null, 2)}</pre> {/* Display API results */}
+        <pre>{JSON.stringify(apiResults, null, 2)}</pre>
       </div>
     </form>
   );
