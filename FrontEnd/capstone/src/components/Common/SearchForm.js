@@ -6,7 +6,7 @@ import PassengerCount from '../searchForm/PassengerCount';
 import styles from '../../styles/SearchForm.module.css';
 import axios from 'axios';
 
-const SearchForm = ({ setResults }) => {
+const SearchForm = () => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
   const [departure, setDeparture] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -23,13 +23,14 @@ const SearchForm = ({ setResults }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (departure && destination && departure.cityName === destination.cityName) {
+    if (departure && destination && departure.label === destination.label) {
       alert('Departure and destination cannot be the same city.');
       return;
     }
+
     const params = {
-      departure: departure ? departure.iataCodes : '',
-      destination: destination ? destination.iataCodes : '',
+      origin: departure ? departure.iataCode : '',
+      destination: destination ? destination.iataCode : '',
       departureDate,
       returnDate: tripType.value === 'Round-Trip' ? returnDate : '',
       adults,
@@ -38,17 +39,17 @@ const SearchForm = ({ setResults }) => {
       cabinClass: cabinClass.value,
       addNearbyAirport,
     };
-    const results = await fetchFlights(params);
-    setApiResults(results);
-  };
 
-  const fetchFlights = async (params) => {
+    const queryString = Object.keys(params)
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+      .join('&');
+
     try {
-      const response = await axios.post('http://localhost:8080/api/flights', params);
-      return response.data;
+      const response = await axios.get(`http://localhost:8080/api/flights?${queryString}`);
+      setApiResults(response.data);
     } catch (error) {
       console.error('Error fetching flights:', error);
-      return [];
+      setApiResults([]); // Reset results on error
     }
   };
 
@@ -96,7 +97,11 @@ const SearchForm = ({ setResults }) => {
       <button type="submit" className={styles.button}>Search</button>
       <div>
         <h3>Results:</h3>
-        <pre>{JSON.stringify(apiResults, null, 2)}</pre>
+        {apiResults.length > 0 ? (
+          <pre>{JSON.stringify(apiResults, null, 2)}</pre>
+        ) : (
+          <p>No results found. Please adjust your search criteria.</p>
+        )}
       </div>
     </form>
   );
