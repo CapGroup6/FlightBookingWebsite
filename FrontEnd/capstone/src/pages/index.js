@@ -1,7 +1,6 @@
 import * as React from "react";
 import Header from '../components/Common/Header';
 import SearchForm from '../components/Common/SearchForm';
-import ChatBot from '../components/Common/ChatBot';
 import Features from '../components/SearchPage/Features';
 
 function Home() {
