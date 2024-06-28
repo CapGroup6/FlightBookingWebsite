@@ -6,12 +6,13 @@ const Input = ({ onSend }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (text.trim() === '') return;
     onSend(text);
     setText('');
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 flex bg-blue-50"> {/* Changed background color to light blue */}
+    <form onSubmit={handleSubmit} className="p-4 flex bg-blue-50">
       <input 
         type="text" 
         value={text} 
