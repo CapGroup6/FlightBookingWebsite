@@ -25,7 +25,7 @@ const TripType = ({ tripType, setTripType }) => {
             '&:hover': {
               border: 'none'
             },
-            width: '150px', // 调整宽度以适应内容
+            width: '120px', // 调整宽度以适应内容
           }),
           valueContainer: (base) => ({
             ...base,

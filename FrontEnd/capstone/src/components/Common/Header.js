@@ -2,8 +2,8 @@ import * as React from "react";
 
 function Header() {
   return (
-    <header className="flex flex-col mt-14 max-md:mt-10 max-md:max-w-full">
-      <div className="flex justify-between items-center w-full max-w-screen-xl p-5 bg-white border-b">
+    <header className="flex flex-col w-full mt-0 p-0">
+      <div className="flex justify-between items-center w-full p-5 bg-white border-b">
         <div className="flex gap-2 items-center">
           <button className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl">
             <img
@@ -15,7 +15,7 @@ function Header() {
             <span>AI Chatbot</span>
           </button>
         </div>
-        <div className="flex gap-5 items-center text-gray-600">
+        <div className="flex gap-5 items-center text-gray-600 ml-auto">
           <div className="relative group">
             <button className="flex items-center gap-2 text-xl">
               Language
@@ -48,7 +48,7 @@ function Header() {
           </div>
           <button className="text-xl">Register/Sign in</button>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center ml-5">
           <img
             loading="lazy"
             src="https://cdn.builder.io/api/v1/image/assets/TEMP/e893a466a5127afac788e7257ebec62963300ee85e5a0d660b172777b5d3967a?apiKey=e35f36ff56764292afe21d9cb1dc1589&"
@@ -56,7 +56,7 @@ function Header() {
             className="w-10 h-10"
           />
           <h1 className="ml-2 text-3xl font-bold text-black">
-            Flight<span>Booking</span>
+            Flight<span>Searching</span>
           </h1>
         </div>
       </div>
