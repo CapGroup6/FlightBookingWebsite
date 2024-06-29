@@ -1,74 +1,109 @@
 import * as React from "react";
+import { useState } from 'react';
+import { useRouter } from 'next/router'; 
 import Link from 'next/link';
+import PreferencePopup from './preferencePopup'; 
 
 function Signup() {
+  const [formData, setFormData] = useState({
+    password: '',
+    email: '',
+  });
+
+  const router = useRouter(); // 移动到这里
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        console.log('Registration successful');
+        router.push('/Login/signupSuccess').catch((err) => console.error('Failed to redirect:', err)); // 使用 router.push 进行页面跳转
+      } else {
+        console.error('Registration failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
-    <div className="pl-14 bg-white max-md:pl-5">
-      <section className="flex gap-40">
-        <div className="flex flex-col w-[60%]">
-          <header className="flex flex-col mt-14 max-md:mt-10 max-md:max-w-full">
-            <div className="flex gap-2 self-start text-3xl font-bold text-black">
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/e893a466a5127afac788e7257ebec62963300ee85e5a0d660b172777b5d3967a?apiKey=e35f36ff56764292afe21d9cb1dc1589&"
-                className="shrink-0 aspect-square w-[39px]"
-                alt="FlightBooking Logo"
-              />
-              <div className="flex-auto">
-                Flight<span className="">Booking</span>
+    <div className="pl-14 bg-white">
+        <section className="flex gap-5 h-screen">
+          <aside className="flex flex-col w-[80%]">
+            <header className="flex flex-col mt-14">
+              <div className="flex gap-3 text-3xl font-bold">
+                <img
+                  src="/images/airplane.png"
+                  alt="Logo"
+                />
+                <h1 >
+                  FlightSearch
+                </h1>
               </div>
+            </header>
+            <div className="flex-grow flex items-center">
+              <form className="max-w-xs mx-auto my-auto" onSubmit={handleSubmit}>
+                <h2 className="text-xl">Sign up to FlightSearch</h2>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Email Address *"
+                  className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
+                  required
+                  onChange={handleChange}
+                />
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Password *"
+                  className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
+                  required
+                  onChange={handleChange}
+                />             
+                <button
+                    type="submit"
+                    className="flex gap-2 justify-center py-2 mt-8 text-base uppercase bg-black rounded text-white w-full" style={{backgroundColor: "#B0DDFE"}}
+                  >      
+                    Sign up
+                </button>
+                {/* <PreferencePopup isOpen={modalIsOpen} onRequestClose={closeModal} /> */}
+                <button
+                  type="button"
+                  className="py-2 mt-4 text-base uppercase bg-black rounded text-white w-full"
+                >
+                    <Link href="./login">
+                      Back to Login
+                    </Link>
+                </button>
+              </form>
             </div>
-          </header>
-          <main className="flex flex-col self-end mt-10vh text-xs font-medium tracking-normal leading-3 w-[462px]">
-            <div className="justify-center self-start ml-10 text-xl leading-8 text-black text-opacity-90 max-md:ml-2.5">
-              Sign up to Flight Booking
+          </aside>
+          
+          <aside className="flex justify-end items-end w-[60%] max-md:ml-0 max-md:w-full">
+            <div className="flex justify-end items-end h-full w-full p-4" style={{backgroundImage: 'url("/images/loginback.png")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            height: "100%"
+          }}>
+            <h1 className="text-white text-2xl font-bold">FlightSearch</h1>
             </div>
-            <form className="flex flex-col justify-center mt-12 text-black text-opacity-60 max-md:mt-10 max-md:max-w-full">
-              <label htmlFor="email" className="sr-only">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Email Address *"
-                className="box-border flex relative flex-col shrink-0 pl-2.5 py-4 mt-5 rounded border border-solid border-stone-300 w-73"
-                required
-              />
-              <label htmlFor="password" className="sr-only">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Password *"
-                className="box-border flex relative flex-col shrink-0 pl-2.5 py-4 mt-5 rounded border border-solid border-stone-300 w-73"
-                required
-              />
-              <button type="submit" className="flex justify-center items-center px-16 mt-36 text-base tracking-wide leading-7 text-white uppercase bg-blue-600 rounded shadow max-md:px-5 max-md:mt-10 max-md:max-w-full">
-                <span className="flex flex-col justify-center py-2 max-w-full w-[105px] max-md:px-5">
-                  <Link href="./signupSuccess">
-                  Sign up
-                  </Link>
-                </span>
-              </button>
-              <button type="button" className="flex justify-center items-center px-16 mt-5 text-base tracking-wide leading-7 text-white uppercase bg-black rounded shadow max-md:px-5 max-md:max-w-full">
-                <span className="flex flex-col justify-center py-2 max-w-full w-[158px] max-md:px-5">
-                  <Link href="./login">
-                    BACK to login
-                  </Link>
-                  </span>
-              </button>
-            </form>
-          </main>
-        </div>
-        <aside className="flex flex-col ml-5 w-[32%]">
-          <div className="relative flex-col font-bold tracking-normal text-white whitespace-nowrap min-h-screen max-md:px-5 max-md:pt-10 max-md:mt-10 max-md:max-w-full">
-            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/710b9f1f8bcde4a4ab6d9453fa42fba5b35dd8f9330c420836b790cbf6c7e94a?apiKey=e35f36ff56764292afe21d9cb1dc1589&" className="object-cover absolute inset-0 size-full" alt="FlightBooking Background" />
-            <div className="absolute z-10 bottom-1 right-5">
-              Flight Booking
-            </div>
-          </div>
-        </aside>
-      </section>
-    </div>
+          </aside>
+        </section>
+      </div>
   );
 }
 

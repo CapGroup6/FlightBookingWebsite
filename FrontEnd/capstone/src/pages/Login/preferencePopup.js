@@ -79,7 +79,7 @@ function PreferencePopup({isOpen, onRequestClose}) {
         <form className="flex flex-col px-6 pt-5 w-full max-md:px-5 max-md:max-w-full">
             <div className="flex gap-5 text-sm font-medium leading-5 text-slate-700 max-md:flex-wrap">
             <FormLabel htmlFor="firstName">First Name*</FormLabel>
-            <TextInput id="firstName" placeholder="e.g. David" />
+            <input type="text" id="firstName" placeholder="e.g. David" />
             <FormLabel htmlFor="lastName">Last Name*</FormLabel>
             <TextInput id="lastName" placeholder="e.g. Smith" />
             </div>
