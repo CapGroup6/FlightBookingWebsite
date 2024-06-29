@@ -3,10 +3,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/router'; 
 import Link from 'next/link';
 import PreferencePopup from './preferencePopup'; 
+import { Phone } from "@mui/icons-material";
 
 function Signup() {
   const [formData, setFormData] = useState({
+    username: 'andrew1', // 使用email的用户名部分作为默认用户名
     password: '',
+    phone: '000-000-0000', // 提供一个默认的电话号码
     email: '',
   });
 

@@ -5,24 +5,34 @@ import PreferencePopup from './preferencePopup';
 
 function Login() {
 
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
 
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // 阻止表单默认提交行为
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
+    try {
+      const response = await fetch('/api/signin', { // 确保这个路径与你的API端点匹配
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    if (email && password) {
-      openModal();
-    } else {
-      alert('Please enter email and password');
+      const data = await response.json();
+
+      if (response.ok) {
+        // 处理登录成功的情况，例如保存登录状态、重定向等
+        console.log('Login successful:', data);
+      } else {
+        // 处理登录失败的情况
+        setLoginError(data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError('Login failed due to server error');
     }
   };
 
@@ -42,14 +52,16 @@ function Login() {
               </div>
             </header>
             <div className="flex-grow flex items-center">
-              <form className="max-w-xs mx-auto my-auto">
+              <form className="max-w-xs mx-auto my-auto" onSubmit={handleSubmit}>
                 <h2 className="text-xl">Sign in</h2>
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Email Address *"
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Username *"
                   className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
                 <input
@@ -58,12 +70,12 @@ function Login() {
                   name="password"
                   placeholder="Password *"
                   className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />             
                 <button
                     type="submit"
-                    onClick = {
-                      handleLogin}
                     className="flex gap-2 justify-center py-2 mt-8 text-base uppercase bg-black rounded text-white w-full" style={{backgroundColor: "#B0DDFE"}}
                   > 
                     Login
@@ -73,7 +85,7 @@ function Login() {
                         className=" my-auto"
                       />
                 </button>
-                {/* <PreferencePopup isOpen={modalIsOpen} onRequestClose={closeModal} /> */}
+                {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
                 <button
                   type="button"
                   className="py-2 mt-4 text-base uppercase bg-black rounded text-white w-full"
