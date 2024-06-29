@@ -1,0 +1,67 @@
+.noBorder__control {
+  border: none !important;
+  background: none;
+  box-shadow: none !important;
+  font-size: 0.875rem; /* 调整字体大小 */
+  color: #333; /* 调整文字颜色 */
+  padding: 0; /* 移除内边距 */
+  min-width: auto; /* 移除最小宽度 */
+  display: inline-flex; /* 使其与图标齐平 */
+  align-items: center; /* 垂直居中 */
+  width: 150px; /* 确保宽度合适 */
+}
+
+.noBorder__indicator-separator {
+  display: none;
+}
+
+.noBorder__dropdown-indicator {
+  padding: 0;
+}
+
+.noBorder__menu {
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 11px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.noBorder__option {
+  padding: 8px 12px;
+}
+
+.noBorder__option--is-selected {
+  background-color: #f0f0f0;
+}
+
+.noBorder__option--is-focused {
+  background-color: #e0e0e0;
+}
+
+
+
+
+
+.dateSelector {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.dateInputWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.dateInput {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  width: 150px;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
