@@ -35,14 +35,16 @@ function Chatbot() {
 
     // Send the message to the backend
     try {
-      const response = await axios.post('/api/chatbot/get-response', null, {
+      const response = await axios.post('http://localhost:8080/api/chatbot/get-response', {
+        prompt: text
+      }, {
         params: {
-          sessionId: currentConversation.id,
-        },
-        data: { message: text },
+          userId: 1, // 这里假设用户ID为1，请根据实际情况调整
+          sessionId: currentConversation.id
+        }
       });
       console.log("Received response:", response.data); // 打印接收到的响应以进行调试
-      const responseMessage = { id: Date.now(), user: false, text: response.data };
+      const responseMessage = { id: Date.now(), user: false, text: response.data }; // 确保response.data是返回的消息文本
       const updatedConversationWithResponse = {
         ...updatedConversation,
         messages: [...updatedConversation.messages, responseMessage],
