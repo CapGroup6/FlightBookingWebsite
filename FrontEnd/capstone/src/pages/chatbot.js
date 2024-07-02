@@ -6,6 +6,7 @@ import Guidance from '../components/Chatbot/Guidance';
 import ChatWindow from '../components/Chatbot/ChatWindow';
 import Input from '../components/Chatbot/Input';
 
+
 function Chatbot() {
   const [conversations, setConversations] = useState([]);
   const [currentConversation, setCurrentConversation] = useState(null);
@@ -61,7 +62,7 @@ function Chatbot() {
     <div className="flex flex-col h-screen">
       <Navbar />
       <div className="flex flex-grow">
-        <Sidebar 
+      <Sidebar 
           conversations={conversations} 
           onNewChat={handleNewChat}
           onSelectConversation={handleSelectConversation}
@@ -70,7 +71,7 @@ function Chatbot() {
           onRenameConversation={handleRenameConversation}
           className="w-1/4" 
         />
-        <div className="flex flex-col w-3/4">
+        <div className="flex flex-col w-full">
           <div className="flex-grow p-4 bg-blue-50">
             {guidanceVisible ? (
               <Guidance />

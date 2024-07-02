@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from 'next/link';
 
 function Header() {
   return (
@@ -12,7 +13,11 @@ function Header() {
               className="w-5 aspect-square"
               alt="AI Chatbot Icon"
             />
-            <span>AI Chatbot</span>
+            <span>
+                <Link href="../chatbot">
+                   AI Chatbot
+                </Link>
+              </span>
           </button>
         </div>
         <div className="flex gap-5 items-center text-gray-600 ml-auto">
@@ -46,7 +51,11 @@ function Header() {
               <a href="#" className="block px-4 py-2 text-gray-800">CAD</a>
             </div>
           </div>
-          <button className="text-xl">Register/Sign in</button>
+          <button className="text-xl">
+              <Link href="./Login/login">
+                Register/Sign in
+              </Link>
+          </button>
         </div>
         <div className="flex items-center ml-5">
           <img

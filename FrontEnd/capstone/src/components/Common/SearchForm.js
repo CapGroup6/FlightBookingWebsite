@@ -7,7 +7,7 @@ import PassengerCount from '../searchForm/PassengerCount';
 import axios from 'axios';
 import styles from '../../styles/SearchForm.module.css';
 
-const SearchForm = () => {
+const SearchForm = ({ onSearch }) => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
   const [departure, setDeparture] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -53,6 +53,7 @@ const SearchForm = () => {
     try {
       const response = await axios.get(`http://localhost:8080/api/flights?${queryString}`);
       setApiResults(response.data);
+      onSearch(params);
     } catch (error) {
       console.error('Error fetching flights:', error);
       setApiResults([]); // Reset results on error
