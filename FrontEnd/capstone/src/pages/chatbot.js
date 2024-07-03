@@ -10,7 +10,8 @@ function Chatbot() {
   const [conversations, setConversations] = useState([]);
   const [currentConversation, setCurrentConversation] = useState(null);
   const [guidanceVisible, setGuidanceVisible] = useState(true);
-  const [isLoading, setIsLoading] = useState(false); // 添加加载状态
+  const [isLoading, setIsLoading] = useState(false);
+  const [sendError, setSendError] = useState(null); // 定义sendError状态变量
 
   const handleNewChat = () => {
     const newConversation = { id: Date.now(), messages: [], name: '' };
@@ -21,7 +22,7 @@ function Chatbot() {
 
   const handleSend = async (text) => {
     if (!currentConversation) return;
-    const newMessage = { id: Date.now(), user: true, text };
+    const newMessage = { id: Date.now(), user: 'user', text };
     const updatedConversation = {
       ...currentConversation,
       messages: [...currentConversation.messages, newMessage],
@@ -29,10 +30,11 @@ function Chatbot() {
     setConversations(conversations.map(conv => conv.id === currentConversation.id ? updatedConversation : conv));
     setCurrentConversation(updatedConversation);
     setGuidanceVisible(false);
-    setIsLoading(true); // 设置加载状态为true
-
-    console.log("Sending message:", text); // 打印发送的消息以进行调试
-
+    setIsLoading(true);
+    setSendError(null); // 重置错误状态
+  
+    console.log("Sending message:", text);
+  
     // Send the message to the backend
     try {
       const response = await axios.post('http://localhost:8080/api/chatbot/get-response', {
@@ -40,23 +42,34 @@ function Chatbot() {
       }, {
         params: {
           userId: 1, // 这里假设用户ID为1，请根据实际情况调整
-          sessionId: currentConversation.id
+          sessionId: currentConversation.id.toString() // 确保sessionId为字符串
         }
       });
-      console.log("Received response:", response.data); // 打印接收到的响应以进行调试
-      const responseMessage = { id: Date.now(), user: false, text: response.data }; // 确保response.data是返回的消息文本
-      const updatedConversationWithResponse = {
-        ...updatedConversation,
-        messages: [...updatedConversation.messages, responseMessage],
-      };
-      setConversations(conversations.map(conv => conv.id === currentConversation.id ? updatedConversationWithResponse : conv));
-      setCurrentConversation(updatedConversationWithResponse);
+      if (response.status === 200) {
+        console.log("Received response:", response.data);
+        const responseMessage = { id: Date.now(), user: 'bot', text: response.data };
+        const updatedConversationWithResponse = {
+          ...updatedConversation,
+          messages: [...updatedConversation.messages, responseMessage],
+        };
+        setConversations(conversations.map(conv => conv.id === currentConversation.id ? updatedConversationWithResponse : conv));
+        setCurrentConversation(updatedConversationWithResponse);
+      } else {
+        setSendError("Failed to send message. Please try again.");
+      }
     } catch (error) {
-      console.error("Error sending message:", error); // 打印错误信息以进行调试
+      if (!error.response) {
+        // Network error or no response from server
+        setSendError("Network error: Unable to connect to the server. Please check your internet connection.");
+      } else {
+        setSendError("Error sending message: " + error.message);
+      }
+      console.error("Error sending message:", error);
     } finally {
-      setIsLoading(false); // 设置加载状态为false
+      setIsLoading(false);
     }
   };
+  
 
   const handleSelectConversation = (id) => {
     const conversation = conversations.find(conv => conv.id === id);
@@ -98,14 +111,15 @@ function Chatbot() {
           onRenameConversation={handleRenameConversation}
           className="w-1/4" 
         />
-        <div className="flex flex-col w-3/4">
+        <div className="flex flex-col w-full">
           <div className="flex-grow p-4 bg-blue-50 overflow-auto">
             {guidanceVisible ? (
               <Guidance />
             ) : (
               <>
                 <ChatWindow conversations={currentConversation?.messages} />
-                {isLoading && <div>Loading...</div>} {/* 添加加载指示器 */}
+                {isLoading && <div>Loading...</div>}
+                {sendError && <div className="text-red-500 mt-2">{sendError}</div>} {/* 显示错误消息 */}
               </>
             )}
           </div>
