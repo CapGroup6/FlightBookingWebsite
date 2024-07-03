@@ -27,11 +27,15 @@ const CabinClass = ({ cabinClass, setCabinClass }) => {
             '&:hover': {
               border: 'none'
             },
-            width: '150px', // 调整宽度以适应内容
+            width: 'auto', // 根据内容自适应宽度
+            display: 'flex',
+            flexWrap: 'nowrap'
           }),
           valueContainer: (base) => ({
             ...base,
-            padding: '0'
+            padding: '0',
+            display: 'flex',
+            flexWrap: 'nowrap'
           }),
           input: (base) => ({
             ...base,
@@ -43,6 +47,12 @@ const CabinClass = ({ cabinClass, setCabinClass }) => {
           indicatorsContainer: (base) => ({
             ...base,
             padding: '0'
+          }),
+          option: (provided) => ({
+            ...provided,
+            whiteSpace: 'nowrap', // 防止选项内容换行
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
           })
         }}
       />

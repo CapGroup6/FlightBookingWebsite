@@ -6,6 +6,7 @@ import ChatWindow from '../components/Chatbot/ChatWindow';
 import Input from '../components/Chatbot/Input';
 import axios from 'axios';
 
+
 function Chatbot() {
   const [conversations, setConversations] = useState([]);
   const [currentConversation, setCurrentConversation] = useState(null);
@@ -96,7 +97,7 @@ function Chatbot() {
           onRenameConversation={handleRenameConversation}
           className="w-1/4" 
         />
-        <div className="flex flex-col w-3/4">
+        <div className="flex flex-col w-full">
           <div className="flex-grow p-4 bg-blue-50 overflow-auto">
             {guidanceVisible ? (
               <Guidance />

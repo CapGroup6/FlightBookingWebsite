@@ -50,8 +50,41 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
     fetchData();
   }, [userInput]);
 
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      height: '40px',  // 固定高度
+      minHeight: '40px', // 固定最小高度
+      width: '240px', // 固定宽度
+      display: 'flex',
+      alignItems: 'center'
+    }),
+    valueContainer: (provided) => ({
+      ...provided,
+      height: '40px', // 确保值容器的高度一致
+      display: 'flex',
+      alignItems: 'center'
+    }),
+    input: (provided) => ({
+      ...provided,
+      margin: '0', // 移除默认的内边距
+      padding: '0', // 移除默认的内边距
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      height: '40px', // 确保占位符的高度一致
+      display: 'flex',
+      alignItems: 'center'
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      display: 'flex',
+      alignItems: 'center'
+    })
+  };
+
   return (
-    <div className={styles.inputWrapper}>
+    <div className={styles.dateInputWrapper}>
       <Select
         placeholder={locationType === "departure" ? "Leaving From" : "Going To"}
         onInputChange={handleInputChange}
@@ -61,32 +94,10 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
           value: option.cityName,
           iataCode: option.iataCode
         }))}
-        styles={selectStyles}
+        styles={customStyles} 
       />
     </div>
   );
-};
-
-const selectStyles = {
-  control: (provided) => ({
-    ...provided,
-    width: '200px',
-    marginBottom: '10px',
-    color: '#000'
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    color: '#000'
-  }),
-  placeholder: (provided) => ({
-    ...provided,
-    color: '#000'
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    color: state.isSelected ? '#000' : '#000',
-    backgroundColor: state.isSelected ? '#e0e0e0' : '#fff'
-  })
 };
 
 export default LocationSelector;
