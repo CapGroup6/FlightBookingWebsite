@@ -13,6 +13,8 @@ const Option = (props) => {
 
 const MultiValueRemove = () => null; // Hides the remove "x" button
 
+const ClearIndicator = () => null;
+
 const PassengerCount = ({ adults, setAdults, children, setChildren, infants, setInfants }) => {
   const passengerOptions = [
     {
@@ -53,7 +55,7 @@ const PassengerCount = ({ adults, setAdults, children, setChildren, infants, set
   return (
     <Select
       placeholder={`Adults: ${adults}, Children: ${children}, Infants: ${infants}`}
-      components={{ Option, MultiValueRemove }} // Hides the "x" button
+      components={{ Option, MultiValueRemove, ClearIndicator }} // Hides the "x" button
       options={passengerOptions}
       isMulti
       closeMenuOnSelect={false}
@@ -68,12 +70,22 @@ const PassengerCount = ({ adults, setAdults, children, setChildren, infants, set
           '&:hover': {
             border: 'none'
           },
-          width: '180px', // Adjust width to fit content
+          width: 'auto', // Adjust width to fit content
+          display: 'flex', // Use flexbox layout
+          flexWrap: 'nowrap' // Prevent wrapping
         }),
         valueContainer: (base) => ({
           ...base,
+          display: 'flex',
+          flexWrap: 'nowrap',
+          overflow: 'hidden', // Prevent overflow
           padding: '0',
           fontSize: '0.875rem', // Adjust font size
+        }),
+        multiValue: (base) => ({
+          ...base,
+          display: 'flex',
+          flexWrap: 'nowrap'
         }),
         input: (base) => ({
           ...base,

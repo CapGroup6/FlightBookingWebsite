@@ -1,38 +1,35 @@
-import * as React from "react";
+import React, { useState } from 'react';
 import Header from '../components/Common/Header';
 import SearchForm from '../components/Common/SearchForm';
+import BackgroundPicture from '../components/Common/BackgroundPicture';
+import DateExpansion from '../components/Result/DateExpansion';
+import ResultCard from '../components/Result/ResultsCard';
+import styles from '../styles/Home.module.css'; // 导入CSS模块
+
 
 function Home() {
+  const [searchParams, setSearchParams] = useState(null);
+
+  const handleSearch = (params) => {
+    setSearchParams(params);
+  };
+
   return (
-    <div>
+    <div className={styles.container}>
       <Header />
-      <section style={styles.section}>
-        <h1 style={styles.slogan}>Slogan</h1>
-        <SearchForm />
-      </section>
+      <div className={styles.relative}>
+        <BackgroundPicture />
+        <div className={styles.overlayIn}>
+          <SearchForm onSearch={handleSearch}/>
+          {/*{searchParams && (
+             <DateExpansion baseDate={new Date(searchParams.departureDate)} />
+          )}*/}
+        <ResultCard />
+
+        </div>
+      </div>
     </div>
   );
 }
-
-const styles = {
-  section: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: '1200px',
-  },
-  slogan: {
-    fontSize: '2rem',
-    margin: '20px 0',
-  },
-  bottomContainer: {
-    backgroundColor: '#ffffff',  
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-};
 
 export default Home;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DateSelector from '../searchForm/DateSelector';
 import LocationSelector from '../searchForm/LocationSelector';
 import TripType from '../searchForm/TripType';
@@ -7,7 +7,7 @@ import PassengerCount from '../searchForm/PassengerCount';
 import axios from 'axios';
 import styles from '../../styles/SearchForm.module.css';
 
-const SearchForm = () => {
+const SearchForm = ({ onSearch }) => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
   const [departure, setDeparture] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -21,6 +21,8 @@ const SearchForm = () => {
   const [cabinClass, setCabinClass] = useState({ label: 'Economy', value: 'Economy' });
   const [addNearbyAirport, setAddNearbyAirport] = useState(false);
   const [apiResults, setApiResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [buttonClicked, setButtonClicked] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,6 +30,9 @@ const SearchForm = () => {
       alert('Departure and destination cannot be the same city.');
       return;
     }
+
+    setLoading(true);
+    setButtonClicked(true);
 
     const params = {
       origin: departure ? departure.iataCode : '',
@@ -48,28 +53,37 @@ const SearchForm = () => {
     try {
       const response = await axios.get(`http://localhost:8080/api/flights?${queryString}`);
       setApiResults(response.data);
+      onSearch(params);
     } catch (error) {
       console.error('Error fetching flights:', error);
       setApiResults([]); // Reset results on error
+    } finally {
+      setLoading(false);
+      setTimeout(() => setButtonClicked(false), 300); // Remove the click effect after 300ms
     }
   };
 
+  useEffect(() => {
+    if (apiResults.length > 0) {
+      handleSubmit(new Event('submit'));
+    }
+  }, [departure, destination, departureDate, returnDate, adults, children, infants, cabinClass, addNearbyAirport]);
+
   return (
     <div className="flex flex-col items-end px-16 pt-20 max-md:pl-5">
-      <form onSubmit={handleSubmit} className="flex gap-5 justify-between items-end pr-6 pb-6 pl-2.5 mt-48 bg-white rounded-lg shadow-sm max-md:flex-wrap max-md:pr-5 max-md:mt-10">
-        <div className="flex flex-col self-stretch max-md:max-w-full">
-          <div className="flex z-10 gap-5 py-2 pr-20 pl-3 w-full text-sm leading-5 text-sky-950 max-md:flex-wrap max-md:pr-5 max-md:max-w-full">
-            <div className="flex gap-1.5 justify-center items-start py-0.5 whitespace-nowrap leading-[129%]">
+      <form onSubmit={handleSubmit} className={`flex gap-2 justify-between items-end pr-6 pb-3 pl-2.5 mt-48 bg-white rounded-lg shadow-sm ${styles.searchFormContainer} max-md:flex-wrap max-md:pr-5 max-md:mt-7`}>
+        <div className="flex flex-col self-stretch gap-0.5 max-md:max-w-full">
+          <div className={`flex z-10 gap-1 py-1 pr-20 pl-3 w-full text-sm leading-2 text-sky-950 ${styles.searchFormInner} max-md:flex-wrap max-md:pr-5 max-md:max-w-full`}>
+            <div className="flex gap-1.5 justify-center py-px whitespace-nowrap">
               <img
                 loading="lazy"
                 src="https://cdn.builder.io/api/v1/image/assets/TEMP/6283ab735092d6ee58978d7bc83f0d04294b046ac513d55abccb6c17a478935f?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
-                className="shrink-0 w-3.5 aspect-square"
+                className="shrink-0 w-4 aspect-square"
               />
               <TripType
                 tripType={tripType}
                 setTripType={setTripType}
               />
-
             </div>
             <div className="flex gap-1.5 justify-center items-center py-px">
               <img
@@ -85,7 +99,6 @@ const SearchForm = () => {
                 infants={infants}
                 setInfants={setInfants}
               />
-
               <div className="flex gap-1.5 justify-center py-px whitespace-nowrap">
                 <img
                   loading="lazy"
@@ -99,37 +112,55 @@ const SearchForm = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-3.5 px-0.5 max-md:flex-wrap">
-            <LocationSelector
-              userInput={userInputDeparture}
-              setUserInput={setUserInputDeparture}
-              setLocation={setDeparture}
-              locationType="departure"
-            />
-            <LocationSelector
-              userInput={userInputDestination}
-              setUserInput={setUserInputDestination}
-              setLocation={setDestination}
-              locationType="destination"
-            />
+          <div className='flex flex-row item-center self-stretch gap-3 max-md:max-w-full'>
+            <div className="flex flex-row gap-3 items-center justify-center h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap rounded-lg max-md:mt-0 ${styles.imgContainer}">
+              <LocationSelector
+                userInput={userInputDeparture}
+                setUserInput={setUserInputDeparture}
+                setLocation={setDeparture}
+                locationType="departure"
+              />
+              <div className="shrink-0 w-4 aspect-square self-stretch flex flex-col items-center justify-center">
+                <img
+                  loading="lazy"
+                  srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
+                  className="img"
+                />
+                <img
+                  loading="lazy"
+                  srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
+                  className="img"
+                />
+              </div>
+              <LocationSelector
+                userInput={userInputDestination}
+                setUserInput={setUserInputDestination}
+                setLocation={setDestination}
+                locationType="destination"
+              />
+            </div>
+            <div className="flex flex-row items-center justify-center h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap rounded-lg max-md:mt-0">
+              <DateSelector
+                tripType={tripType}
+                departureDate={departureDate}
+                setDepartureDate={setDepartureDate}
+                returnDate={returnDate}
+                setReturnDate={setReturnDate}
+              />
+            </div>
+            <div className="flex flex-row items-center justify-center h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 rounded-lg max-md:mt-0">
+              <button type="submit" className={`h-10 px-7 max-md:px-5 ${buttonClicked ? 'btn-clicked' : ''}`}>
+                {loading ? 'Searching...' : 'Search'}
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="flex gap-0 items-start py-px mt-8 text-sm font-semibold leading-6 text-right capitalize text-zinc-600">
-          <DateSelector
-            tripType={tripType}
-            departureDate={departureDate}
-            setDepartureDate={setDepartureDate}
-            returnDate={returnDate}
-            setReturnDate={setReturnDate}
-          />
-        </div>
-        <div className="flex flex-col justify-center px-4 py-2 mt-11 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 rounded-lg max-md:mt-10">
-          <button type="submit" className="justify-center px-7 max-md:px-5">Search</button>
         </div>
       </form>
       <div>
         <h3>Results:</h3>
-        {apiResults.length > 0 ? (
+        {loading ? (
+          <p>Loading...</p>
+        ) : apiResults.length > 0 ? (
           <pre>{JSON.stringify(apiResults, null, 2)}</pre>
         ) : (
           <p>No results found. Please adjust your search criteria.</p>
