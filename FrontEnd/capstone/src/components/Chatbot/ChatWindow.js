@@ -2,7 +2,7 @@
 import React from 'react';
 
 const ChatWindow = ({ conversations }) => {
-  if (!conversations) return null; // Add this line to handle null conversations
+  if (!conversations) return null;
 
   return (
     <div className="flex-grow p-4 bg-blue-50">
