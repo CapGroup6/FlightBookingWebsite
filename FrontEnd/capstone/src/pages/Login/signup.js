@@ -11,9 +11,9 @@ import { Phone } from "@mui/icons-material";
 
 function Signup() {
   const [formData, setFormData] = useState({
-    username: 'andrew1', 
+    username: '', 
     password: '',
-    phone: '000-000-0000', 
+    phone: '', 
     email: '',
   });
 
