@@ -7,6 +7,9 @@ import PassengerCount from '../searchForm/PassengerCount';
 import axios from 'axios';
 import styles from '../../styles/SearchForm.module.css';
 import ResultsCard from '../Result/ResultsCard';
+import ResultLeft from '../Result/ResultLeft';
+import ResultRight from '../Result/ResultRight';
+
 
 const SearchForm = ({ onSearch }) => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
@@ -24,6 +27,8 @@ const SearchForm = ({ onSearch }) => {
   const [apiResults, setApiResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
+  const [selectedItinerary, setSelectedItinerary] = useState(null);
+  const [matchingItineraries, setMatchingItineraries] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,6 +85,20 @@ const SearchForm = ({ onSearch }) => {
       const minutes = stopoverDurationMinutes % 60;
       return `${hours}h ${minutes}m`;
     });
+  };
+
+  //onclick a result card
+  const handleCardClick = (selectedCard) => {
+    setSelectedItinerary(selectedCard);
+    
+    // Filter matching itineraries
+    const matches = apiResults.reduce((acc, result) => {
+      const matchedItineraries = result.itineraries.filter(itinerary => 
+        itinerary.segments[0].id === selectedCard.itinerary.segments[0].id);
+      return acc.concat(matchedItineraries.map(itinerary => itinerary.segments[1]));
+    }, []);
+    
+    setMatchingItineraries(matches);
   };
   
   
@@ -178,7 +197,7 @@ const SearchForm = ({ onSearch }) => {
         </div>
       </form>
       <div>
-      {apiResults.map((result, index) => (
+      {TripType === 'One-Way' ? (apiResults.map((result, index) => (
         result.itineraries.map((itinerary, itineraryIndex) => {
           let stopLocations = [];
           const segments = itinerary.segments;
@@ -215,7 +234,64 @@ const SearchForm = ({ onSearch }) => {
             />
           );
         })
-      ))}
+      ))): (apiResults.map((result, index) => { //round-trip
+          let stopLocations = [];
+          const segments = result.itineraries[0].segments;
+          const firstSegment = segments[0];
+          const lastSegment = segments[segments.length - 1];
+
+          segments.slice(0, -1).forEach(segment => stopLocations.push(capitalizeWords(segment.arrival.cityName)));
+
+          const stopoverDurations = calculateStopoverDuration(segments);
+
+          const travelerPricing = result.travelerPricings[0]; 
+          const hasCheckedBags = segments.some(segment => {
+            const fareDetails = travelerPricing.fareDetailsBySegment.find(fd => fd.segmentId === segment.id);
+            return fareDetails?.includedCheckedBags && fareDetails.includedCheckedBags.weight > 0;
+          });
+
+          stopLocations = Array.isArray(stopLocations) ? stopLocations : [];
+          const formattedStopLocations = stopLocations.map((location, index) => `${stopoverDurations[index]} at ${location}`);
+
+          return (
+            <div className='flex gap-0'>
+            <div>
+            <ResultLeft
+              key={`${index}`}
+              airline={capitalizeWords(firstSegment.airlineName)}
+              flightNumber={firstSegment.number}
+              departureTime={firstSegment.departure.at}
+              arrivalTime={lastSegment.arrival.at}
+              departureLocation={firstSegment.departure.iataCode}
+              arrivalLocation={lastSegment.arrival.iataCode}
+              duration={result.itineraries[0].duration}
+              numberOfStops={segments.length - 1}
+              stopLocations={formattedStopLocations}
+              price={`${result.price.grandTotal}`}
+              hasCheckedBags={hasCheckedBags}
+              onClick={() => handleCardClick({ result })}
+            />
+            </div>
+            <div>
+            {matchingItineraries.map((segment, index) => (
+              <ResultRight
+                key={index}
+                airline={capitalizeWords(segment.airlineName)}
+                flightNumber={segment.number}
+                departureTime={segment.departure.at}
+                arrivalTime={segment.arrival.at}
+                departureLocation={segment.departure.iataCode}
+                arrivalLocation={segment.arrival.iataCode}
+                duration={segment.duration}
+                numberOfStops={segment.numberOfStops}
+                price={segment.price}
+              />
+            ))}
+            </div>
+            </div>
+          );
+          })
+      )}
       </div>
     </div>
   );

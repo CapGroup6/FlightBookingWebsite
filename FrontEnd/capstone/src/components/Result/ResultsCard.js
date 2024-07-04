@@ -45,7 +45,7 @@ function ResultsCard({
   const dayDifference = arrivalDate.getDate() - departureDate.getDate();
 
   return (
-    <div className="flex flex-col justify-center shadow-sm w-[800px] mb-4">
+    <div className="flex flex-col justify-center shadow-sm w-[850px] mb-4">
       <div className="flex flex-col justify-center w-full shadow-sm bg-slate-100 max-md:max-w-full">
         <div className="px-4 py-4 w-full bg-white max-md:max-w-full">
           <div className="flex gap-5 max-md:flex-col max-md:gap-0">
