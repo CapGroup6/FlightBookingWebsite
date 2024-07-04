@@ -6,6 +6,7 @@ import CabinClass from '../searchForm/CabinClass';
 import PassengerCount from '../searchForm/PassengerCount';
 import axios from 'axios';
 import styles from '../../styles/SearchForm.module.css';
+import ResultsCard from '../Result/ResultsCard';
 
 const SearchForm = ({ onSearch }) => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
@@ -63,14 +64,34 @@ const SearchForm = ({ onSearch }) => {
     }
   };
 
+  //transfer airline capiatalize
+  const capitalizeWords = (str) => {
+    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+  };
+
+  const calculateStopoverDuration = (segments) => {
+    return segments.slice(0, -1).map((segment, index) => {
+      const nextSegment = segments[index + 1];
+      const arrivalTime = new Date(segment.arrival.at);
+      const departureTime = new Date(nextSegment.departure.at);
+      const stopoverDurationMs = Math.abs(departureTime - arrivalTime); // Duration in milliseconds
+      const stopoverDurationMinutes = Math.floor(stopoverDurationMs / (1000 * 60)); // Convert to minutes
+      const hours = Math.floor(stopoverDurationMinutes / 60);
+      const minutes = stopoverDurationMinutes % 60;
+      return `${hours}h ${minutes}m`;
+    });
+  };
+  
+  
+
   useEffect(() => {
     if (apiResults.length > 0) {
       handleSubmit(new Event('submit'));
     }
-  }, [departure, destination, departureDate, returnDate, adults, children, infants, cabinClass, addNearbyAirport]);
+  }, [departure, destination, departureDate, returnDate, adults, children, infants, cabinClass]);
 
   return (
-    <div className="flex flex-col items-end px-16 pt-20 max-md:pl-5">
+    <div className="relative flex flex-col items-end px-16 pt-20 max-md:pl-5">
       <form onSubmit={handleSubmit} className={`flex gap-2 justify-between items-end pr-6 pb-3 pl-2.5 mt-48 bg-white rounded-lg shadow-sm ${styles.searchFormContainer} max-md:flex-wrap max-md:pr-5 max-md:mt-7`}>
         <div className="flex flex-col self-stretch gap-0.5 max-md:max-w-full">
           <div className={`flex z-10 gap-1 py-1 pr-20 pl-3 w-full text-sm leading-2 text-sky-950 ${styles.searchFormInner} max-md:flex-wrap max-md:pr-5 max-md:max-w-full`}>
@@ -148,7 +169,7 @@ const SearchForm = ({ onSearch }) => {
                 setReturnDate={setReturnDate}
               />
             </div>
-            <div className="flex flex-row items-center justify-center h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 rounded-lg max-md:mt-0">
+            <div className="absolute right-5 h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 rounded-lg max-md:mt-0">
               <button type="submit" className={`h-10 px-7 max-md:px-5 ${buttonClicked ? 'btn-clicked' : ''}`}>
                 {loading ? 'Searching...' : 'Search'}
               </button>
@@ -157,14 +178,44 @@ const SearchForm = ({ onSearch }) => {
         </div>
       </form>
       <div>
-        <h3>Results:</h3>
-        {loading ? (
-          <p>Loading...</p>
-        ) : apiResults.length > 0 ? (
-          <pre>{JSON.stringify(apiResults, null, 2)}</pre>
-        ) : (
-          <p>No results found. Please adjust your search criteria.</p>
-        )}
+      {apiResults.map((result, index) => (
+        result.itineraries.map((itinerary, itineraryIndex) => {
+          let stopLocations = [];
+          const segments = itinerary.segments;
+          const firstSegment = segments[0];
+          const lastSegment = segments[segments.length - 1];
+
+          segments.slice(0, -1).forEach(segment => stopLocations.push(capitalizeWords(segment.arrival.cityName)));
+
+          const stopoverDurations = calculateStopoverDuration(segments);
+
+          const travelerPricing = result.travelerPricings[0]; 
+          const hasCheckedBags = segments.some(segment => {
+            const fareDetails = travelerPricing.fareDetailsBySegment.find(fd => fd.segmentId === segment.id);
+            return fareDetails?.includedCheckedBags && fareDetails.includedCheckedBags.weight > 0;
+          });
+
+          stopLocations = Array.isArray(stopLocations) ? stopLocations : [];
+          const formattedStopLocations = stopLocations.map((location, index) => `${stopoverDurations[index]} at ${location}`);
+
+          return (
+            <ResultsCard
+              key={`${index}-${itineraryIndex}`}
+              airline={capitalizeWords(firstSegment.airlineName)}
+              flightNumber={firstSegment.number}
+              departureTime={firstSegment.departure.at}
+              arrivalTime={lastSegment.arrival.at}
+              departureLocation={firstSegment.departure.iataCode}
+              arrivalLocation={lastSegment.arrival.iataCode}
+              duration={itinerary.duration}
+              numberOfStops={segments.length - 1}
+              stopLocations={formattedStopLocations}
+              price={`${result.price.grandTotal}`}
+              hasCheckedBags={hasCheckedBags}
+            />
+          );
+        })
+      ))}
       </div>
     </div>
   );
