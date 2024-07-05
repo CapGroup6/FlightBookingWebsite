@@ -6,9 +6,10 @@ import CabinClass from '../searchForm/CabinClass';
 import PassengerCount from '../searchForm/PassengerCount';
 import axios from 'axios';
 import styles from '../../styles/SearchForm.module.css';
-import ResultsCard from '../Result/ResultsCard';
-import ResultLeft from '../Result/ResultLeft';
-import ResultRight from '../Result/ResultRight';
+import ResultCardLogic from '../Result/ResultCardLogic';
+import ResultLeftLogic from '../Result/ResultLeftLogic';
+import ResultRightLogic from '../Result/ResultRightLogic';
+
 
 
 const SearchForm = ({ onSearch }) => {
@@ -27,8 +28,11 @@ const SearchForm = ({ onSearch }) => {
   const [apiResults, setApiResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
-  const [selectedItinerary, setSelectedItinerary] = useState(null);
   const [matchingItineraries, setMatchingItineraries] = useState([]);
+  const [selectedPrice, setSelectedPrice] = useState(null);
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,45 +73,31 @@ const SearchForm = ({ onSearch }) => {
     }
   };
 
-  //transfer airline capiatalize
-  const capitalizeWords = (str) => {
-    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
-  };
-
-  const calculateStopoverDuration = (segments) => {
-    return segments.slice(0, -1).map((segment, index) => {
-      const nextSegment = segments[index + 1];
-      const arrivalTime = new Date(segment.arrival.at);
-      const departureTime = new Date(nextSegment.departure.at);
-      const stopoverDurationMs = Math.abs(departureTime - arrivalTime); // Duration in milliseconds
-      const stopoverDurationMinutes = Math.floor(stopoverDurationMs / (1000 * 60)); // Convert to minutes
-      const hours = Math.floor(stopoverDurationMinutes / 60);
-      const minutes = stopoverDurationMinutes % 60;
-      return `${hours}h ${minutes}m`;
-    });
-  };
-
-  //onclick a result card
   const handleCardClick = (selectedCard) => {
-    setSelectedItinerary(selectedCard);
-    
-    // Filter matching itineraries
-    const matches = apiResults.reduce((acc, result) => {
-      const matchedItineraries = result.itineraries.filter(itinerary => 
-        itinerary.segments[0].id === selectedCard.itinerary.segments[0].id);
-      return acc.concat(matchedItineraries.map(itinerary => itinerary.segments[1]));
-    }, []);
-    
+    setSelectedCard(selectedCard);
+    setSelectedPrice(selectedCard.travelerPricings[0].price.total);
+    // Filter matching results
+    const matches = apiResults.filter(result => 
+      result.itineraries[0].segments[0].id === selectedCard.itineraries[0].segments[0].id
+    );
+  
     setMatchingItineraries(matches);
   };
   
-  
+  useEffect(() => {
+    if (apiResults.length > 0) {
+      // Handle submit logic if needed
+      handleSubmit(new Event('submit'));
+    }
+  }, [departure, destination, departureDate, returnDate, adults, children, infants, cabinClass, addNearbyAirport]);
 
   useEffect(() => {
     if (apiResults.length > 0) {
-      handleSubmit(new Event('submit'));
+      handleCardClick(apiResults[0]);
     }
-  }, [departure, destination, departureDate, returnDate, adults, children, infants, cabinClass]);
+  }, [apiResults]);
+
+  const passengersCount = adults + children + infants;
 
   return (
     <div className="relative flex flex-col items-end px-16 pt-20 max-md:pl-5">
@@ -188,110 +178,39 @@ const SearchForm = ({ onSearch }) => {
                 setReturnDate={setReturnDate}
               />
             </div>
-            <div className="absolute right-5 h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 rounded-lg max-md:mt-0">
-              <button type="submit" className={`h-10 px-7 max-md:px-5 ${buttonClicked ? 'btn-clicked' : ''}`}>
+            <div className="absolute right-5 h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 hover:bg-sky-300 rounded-lg max-md:mt-0">
+              <button type="submit" className={`h-10 px-7 max-md:px-5  ${buttonClicked ? 'btn-clicked' : ''}`}>
                 {loading ? 'Searching...' : 'Search'}
               </button>
             </div>
           </div>
         </div>
       </form>
-      <div>
-      {TripType === 'One-Way' ? (apiResults.map((result, index) => (
-        result.itineraries.map((itinerary, itineraryIndex) => {
-          let stopLocations = [];
-          const segments = itinerary.segments;
-          const firstSegment = segments[0];
-          const lastSegment = segments[segments.length - 1];
-
-          segments.slice(0, -1).forEach(segment => stopLocations.push(capitalizeWords(segment.arrival.cityName)));
-
-          const stopoverDurations = calculateStopoverDuration(segments);
-
-          const travelerPricing = result.travelerPricings[0]; 
-          const hasCheckedBags = segments.some(segment => {
-            const fareDetails = travelerPricing.fareDetailsBySegment.find(fd => fd.segmentId === segment.id);
-            return fareDetails?.includedCheckedBags && fareDetails.includedCheckedBags.weight > 0;
-          });
-
-          stopLocations = Array.isArray(stopLocations) ? stopLocations : [];
-          const formattedStopLocations = stopLocations.map((location, index) => `${stopoverDurations[index]} at ${location}`);
-
-          return (
-            <ResultsCard
-              key={`${index}-${itineraryIndex}`}
-              airline={capitalizeWords(firstSegment.airlineName)}
-              flightNumber={firstSegment.number}
-              departureTime={firstSegment.departure.at}
-              arrivalTime={lastSegment.arrival.at}
-              departureLocation={firstSegment.departure.iataCode}
-              arrivalLocation={lastSegment.arrival.iataCode}
-              duration={itinerary.duration}
-              numberOfStops={segments.length - 1}
-              stopLocations={formattedStopLocations}
-              price={`${result.price.grandTotal}`}
-              hasCheckedBags={hasCheckedBags}
-            />
-          );
-        })
-      ))): (apiResults.map((result, index) => { //round-trip
-          let stopLocations = [];
-          const segments = result.itineraries[0].segments;
-          const firstSegment = segments[0];
-          const lastSegment = segments[segments.length - 1];
-
-          segments.slice(0, -1).forEach(segment => stopLocations.push(capitalizeWords(segment.arrival.cityName)));
-
-          const stopoverDurations = calculateStopoverDuration(segments);
-
-          const travelerPricing = result.travelerPricings[0]; 
-          const hasCheckedBags = segments.some(segment => {
-            const fareDetails = travelerPricing.fareDetailsBySegment.find(fd => fd.segmentId === segment.id);
-            return fareDetails?.includedCheckedBags && fareDetails.includedCheckedBags.weight > 0;
-          });
-
-          stopLocations = Array.isArray(stopLocations) ? stopLocations : [];
-          const formattedStopLocations = stopLocations.map((location, index) => `${stopoverDurations[index]} at ${location}`);
-
-          return (
-            <div className='flex gap-0'>
-            <div>
-            <ResultLeft
-              key={`${index}`}
-              airline={capitalizeWords(firstSegment.airlineName)}
-              flightNumber={firstSegment.number}
-              departureTime={firstSegment.departure.at}
-              arrivalTime={lastSegment.arrival.at}
-              departureLocation={firstSegment.departure.iataCode}
-              arrivalLocation={lastSegment.arrival.iataCode}
-              duration={result.itineraries[0].duration}
-              numberOfStops={segments.length - 1}
-              stopLocations={formattedStopLocations}
-              price={`${result.price.grandTotal}`}
-              hasCheckedBags={hasCheckedBags}
-              onClick={() => handleCardClick({ result })}
+      <div className='w-[850px]'>
+        { apiResults.length > 0 && tripType.value === 'One-Way' ? (
+          <div>
+            <ResultCardLogic 
+            apiResults={apiResults.filter(result => result.itineraries.length === 1)} 
+            passenger={passengersCount}/>
+          </div>
+        ) : (
+          <div className="flex">
+            <div className='flex flex-col'>
+            <ResultLeftLogic
+              apiResults={apiResults.filter(result => result.itineraries.length === 2)}
+              handleCardClick={handleCardClick}
+              passenger={passengersCount}
+              selectedCard={selectedCard}
             />
             </div>
-            <div>
-            {matchingItineraries.map((segment, index) => (
-              <ResultRight
-                key={index}
-                airline={capitalizeWords(segment.airlineName)}
-                flightNumber={segment.number}
-                departureTime={segment.departure.at}
-                arrivalTime={segment.arrival.at}
-                departureLocation={segment.departure.iataCode}
-                arrivalLocation={segment.arrival.iataCode}
-                duration={segment.duration}
-                numberOfStops={segment.numberOfStops}
-                price={segment.price}
-              />
-            ))}
+            <div className='flex flex-col'>
+            <ResultRightLogic
+              matchingItineraries={matchingItineraries.filter(result => result.itineraries.length === 2)}
+              price = {selectedPrice}
+            />
             </div>
-            </div>
-          );
-          })
-      )}
+          </div>
+        )}
       </div>
     </div>
   );

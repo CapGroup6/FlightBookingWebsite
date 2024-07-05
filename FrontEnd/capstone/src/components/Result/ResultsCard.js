@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import DetailButton from "../Common/DetailButton";
 
 function formatDuration(duration) {
   if (!duration) return "N/A";
@@ -20,7 +21,9 @@ function ResultsCard({
   numberOfStops,
   stopLocations = [], // Ensure this prop is an array
   price,
+  totalPassengerPrice,
   hasCheckedBags,
+  passenger
 }) {
   const totalPrice = parseFloat(price);
   const [convertedPrice, setConvertedPrice] = useState(null);
@@ -100,12 +103,17 @@ function ResultsCard({
                   </div>
                 )}
                 <div className="flex gap-5 mt-3">
-                  <div className="flex-auto my-auto text-xl font-semibold leading-5 text-right text-sky-950">
-                    ${convertedPrice || 'N/A'}
+                  <div className="flex flex-col">
+                    <div className="flex-auto my-auto text-xl font-semibold leading-5 text-right text-sky-950">
+                      ${convertedPrice || 'N/A'}
+                    </div>
+                    {passenger > 1 && (  
+                      <div className="right-5 bottom-5 self-end mt-4 text-base leading-5 text-right text-slate-400">
+                        Total:${Math.floor(totalPassengerPrice) || 'N/A'}
+                      </div>
+                     )}
                   </div>
-                  <div className="justify-center px-6 py-3.5 text-base font-medium leading-6 text-center text-gray-500 whitespace-nowrap bg-sky-200 rounded max-md:px-5">
-                    Details
-                  </div>
+                  <DetailButton/>
                 </div>
               </div>
             </div>
