@@ -5,14 +5,14 @@ import Guidance from '../components/Chatbot/Guidance';
 import ChatWindow from '../components/Chatbot/ChatWindow';
 import Input from '../components/Chatbot/Input';
 import axios from 'axios';
-
+import qs from 'qs';
 
 function Chatbot() {
   const [conversations, setConversations] = useState([]);
   const [currentConversation, setCurrentConversation] = useState(null);
   const [guidanceVisible, setGuidanceVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [sendError, setSendError] = useState(null); // 定义sendError状态变量
+  const [sendError, setSendError] = useState(null); 
 
   const handleNewChat = () => {
     const newConversation = { id: Date.now(), messages: [], name: '' };
@@ -32,18 +32,21 @@ function Chatbot() {
     setCurrentConversation(updatedConversation);
     setGuidanceVisible(false);
     setIsLoading(true);
-    setSendError(null); // 重置错误状态
+    setSendError(null); 
   
     console.log("Sending message:", text);
   
     // Send the message to the backend
     try {
-      const response = await axios.post('http://localhost:8080/api/chatbot/get-response', {
+      const response = await axios.post('http://localhost:8080/api/chatbot/get-response', qs.stringify({
         prompt: text
-      }, {
+      }), {
         params: {
-          userId: 1, // 这里假设用户ID为1，请根据实际情况调整
-          sessionId: currentConversation.id.toString() // 确保sessionId为字符串
+          userId: 2, 
+          sessionId: currentConversation.id.toString() 
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
       if (response.status === 200) {
@@ -70,7 +73,6 @@ function Chatbot() {
       setIsLoading(false);
     }
   };
-  
 
   const handleSelectConversation = (id) => {
     const conversation = conversations.find(conv => conv.id === id);
