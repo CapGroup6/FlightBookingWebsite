@@ -6,6 +6,11 @@ import CabinClass from '../searchForm/CabinClass';
 import PassengerCount from '../searchForm/PassengerCount';
 import axios from 'axios';
 import styles from '../../styles/SearchForm.module.css';
+import ResultCardLogic from '../Result/ResultCardLogic';
+import ResultLeftLogic from '../Result/ResultLeftLogic';
+import ResultRightLogic from '../Result/ResultRightLogic';
+
+
 
 const SearchForm = ({ onSearch }) => {
   const [tripType, setTripType] = useState({ label: 'Round-Trip', value: 'Round-Trip' });
@@ -23,6 +28,11 @@ const SearchForm = ({ onSearch }) => {
   const [apiResults, setApiResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
+  const [matchingItineraries, setMatchingItineraries] = useState([]);
+  const [selectedPrice, setSelectedPrice] = useState(null);
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,14 +73,34 @@ const SearchForm = ({ onSearch }) => {
     }
   };
 
+  const handleCardClick = (selectedCard) => {
+    setSelectedCard(selectedCard);
+    setSelectedPrice(selectedCard.travelerPricings[0].price.total);
+    // Filter matching results
+    const matches = apiResults.filter(result => 
+      result.itineraries[0].segments[0].id === selectedCard.itineraries[0].segments[0].id
+    );
+  
+    setMatchingItineraries(matches);
+  };
+  
   useEffect(() => {
     if (apiResults.length > 0) {
+      // Handle submit logic if needed
       handleSubmit(new Event('submit'));
     }
   }, [departure, destination, departureDate, returnDate, adults, children, infants, cabinClass, addNearbyAirport]);
 
+  useEffect(() => {
+    if (apiResults.length > 0) {
+      handleCardClick(apiResults[0]);
+    }
+  }, [apiResults]);
+
+  const passengersCount = adults + children + infants;
+
   return (
-    <div className="flex flex-col items-end px-16 pt-20 max-md:pl-5">
+    <div className="relative flex flex-col items-end px-16 pt-20 max-md:pl-5">
       <form onSubmit={handleSubmit} className={`flex gap-2 justify-between items-end pr-6 pb-3 pl-2.5 mt-48 bg-white rounded-lg shadow-sm ${styles.searchFormContainer} max-md:flex-wrap max-md:pr-5 max-md:mt-7`}>
         <div className="flex flex-col self-stretch gap-0.5 max-md:max-w-full">
           <div className={`flex z-10 gap-1 py-1 pr-20 pl-3 w-full text-sm leading-2 text-sky-950 ${styles.searchFormInner} max-md:flex-wrap max-md:pr-5 max-md:max-w-full`}>
@@ -148,22 +178,38 @@ const SearchForm = ({ onSearch }) => {
                 setReturnDate={setReturnDate}
               />
             </div>
-            <div className="flex flex-row items-center justify-center h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 rounded-lg max-md:mt-0">
-              <button type="submit" className={`h-10 px-7 max-md:px-5 ${buttonClicked ? 'btn-clicked' : ''}`}>
+            <div className="absolute right-5 h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 hover:bg-sky-300 rounded-lg max-md:mt-0">
+              <button type="submit" className={`h-10 px-7 max-md:px-5  ${buttonClicked ? 'btn-clicked' : ''}`}>
                 {loading ? 'Searching...' : 'Search'}
               </button>
             </div>
           </div>
         </div>
       </form>
-      <div>
-        <h3>Results:</h3>
-        {loading ? (
-          <p>Loading...</p>
-        ) : apiResults.length > 0 ? (
-          <pre>{JSON.stringify(apiResults, null, 2)}</pre>
+      <div className='w-[850px]'>
+        { apiResults.length > 0 && tripType.value === 'One-Way' ? (
+          <div>
+            <ResultCardLogic 
+            apiResults={apiResults.filter(result => result.itineraries.length === 1)} 
+            passenger={passengersCount}/>
+          </div>
         ) : (
-          <p>No results found. Please adjust your search criteria.</p>
+          <div className="flex">
+            <div className='flex flex-col'>
+            <ResultLeftLogic
+              apiResults={apiResults.filter(result => result.itineraries.length === 2)}
+              handleCardClick={handleCardClick}
+              passenger={passengersCount}
+              selectedCard={selectedCard}
+            />
+            </div>
+            <div className='flex flex-col'>
+            <ResultRightLogic
+              matchingItineraries={matchingItineraries.filter(result => result.itineraries.length === 2)}
+              price = {selectedPrice}
+            />
+            </div>
+          </div>
         )}
       </div>
     </div>

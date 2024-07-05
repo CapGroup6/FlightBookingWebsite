@@ -4,7 +4,7 @@ import SearchForm from '../components/Common/SearchForm';
 import BackgroundPicture from '../components/Common/BackgroundPicture';
 import DateExpansion from '../components/Result/DateExpansion';
 import ResultCard from '../components/Result/ResultsCard';
-import styles from '../styles/Home.module.css'; // 导入CSS模块
+import styles from '../styles/Home.module.css'; 
 
 
 function Home() {
@@ -24,7 +24,6 @@ function Home() {
           {/*{searchParams && (
              <DateExpansion baseDate={new Date(searchParams.departureDate)} />
           )}*/}
-        <ResultCard />
 
         </div>
       </div>
