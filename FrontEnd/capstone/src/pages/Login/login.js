@@ -5,41 +5,48 @@ import { useRouter } from 'next/router';
 
 /*
  * Author: Jiawei Zhou
- * Final Edit Date: 2024/07/03
+ * Final Edit Date: 2024/07/04
 */
 
 function Login() {
 
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const router = useRouter(); 
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); 
-
+    event.preventDefault();
+  
     try {
-      const response = await fetch('/api/signin', { 
+      const response = await fetch('/api/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await response.json();
+      console.log('Response OK:', response.ok, 'Data:', data); 
 
-      if (response.ok) {
-        console.log('Login successful:', data);
+      if (data.data && data.data.code === 200) {
+        console.log(data);
         router.push('/').catch((err) => console.error('Failed to redirect:', err));
       } else {
-        setLoginError(data.message || 'Login failed');
+        handleLoginFailure(data.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setLoginError('Login failed due to server error');
+      console.error('Error during fetch operation:', error);
     }
   };
+  
+
+  function handleLoginFailure(errorMessage) {
+    console.error('Login failed:', errorMessage);
+    alert(errorMessage); 
+    setLoginError(errorMessage);
+  }
 
   return (
       <div className="pl-14 bg-white">
@@ -61,12 +68,12 @@ function Login() {
                 <h2 className="text-xl">Sign in</h2>
                 <input
                   type="text"
-                  id="email"
-                  name="email"
-                  placeholder="Email *"
+                  id="username"
+                  name="username"
+                  placeholder="Username *"
                   className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
                 <input
