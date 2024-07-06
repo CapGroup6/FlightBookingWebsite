@@ -1,154 +1,46 @@
 import * as React from "react";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { getAirlineLogoUrls } from '../components/Common/logoMap';
 
-const airlineNames = ['Star Alliance', 'SkyTeam', 'Oneworld', 'Air Canada', 'Eastar Jet', 'Asiana Airlines'];
-const AirlineLogos = () => {
-  const airlineUrls = getAirlineLogoUrls(airlineNames);
+const airlines = ['Star Alliance', 'SkyTeam', 'Oneworld', 'Air Canada', 'Eastar Jet', 'Asiana Airlines'];
+const cities = ['Los Angeles', 'Vancouver', 'Tokyo', 'Paris', 'London'];
+const airports = ['YVR', 'LAX', 'HND', 'CDG', 'LHR'];
+
+const CheckboxItem = ({ id, value, isAirline, logoUrl }) => (
+  <div className="flex items-center gap-5 mb-2">
+    <input type="checkbox" id={id} name="item" value={value} />
+    {isAirline && logoUrl && <img src={logoUrl} alt={value} style={{ width: '2rem', height: '2rem', borderRadius: '50%' }} />}
+    <label htmlFor={id}>{value}</label>
+  </div>
+);
+
+const DropdownBox = ({ items, label, isAirline }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleDropdown = () => setIsOpen(!isOpen);
+  const airlineUrls = isAirline ? getAirlineLogoUrls(airlines) : [];
 
   return (
     <div>
-      {airlineUrls.map((url, index) => (
-        <div key={index} className="flex items-center gap-5 mb-2">
-          <img src={url} alt={`Airline ${index}`} style={{ width: '2rem', height: '2rem', borderRadius: '50%'}}/>
-          <p>{airlineNames[index]}</p>
+      <div className="flex gap-5 justify-between py-3 pr-14 mt-5 w-full text-sm leading-5 rounded-sm border border-gray-300 border-solid text-sky-950 cursor-pointer" onClick={toggleDropdown}>
+        <div>{label}</div>
+        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6711331a7a01d381e3668778eb46261c46c102739c5a1f11369941d95f312479?apiKey=e35f36ff56764292afe21d9cb1dc1589&" className="shrink-0 w-4 aspect-square" alt="Expand icon" />
+      </div>
+      {isOpen && (
+        <div className="mt-5">
+          {items.map((item, index) => (
+            <CheckboxItem
+              key={index}
+              id={`item-${index}`}
+              value={item}
+              isAirline={isAirline}
+              logoUrl={isAirline ? airlineUrls[index] : null}
+            />
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 };
-
-function Dropdown() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleDropdown = () => setIsOpen(!isOpen);
-
-  return (
-    <div>
-      <div className="flex gap-5 justify-between py-3 pr-14 mt-5 w-full text-sm leading-5 rounded-sm border border-gray-300 border-solid text-sky-950 cursor-pointer" onClick={toggleDropdown}>
-        <div>All Airlines</div>
-        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6711331a7a01d381e3668778eb46261c46c102739c5a1f11369941d95f312479?apiKey=e35f36ff56764292afe21d9cb1dc1589&" className="shrink-0 w-4 aspect-square" alt="Expand icon" /> 
-      </div>
-      {isOpen && <AirlineLogos />}
-    </div>
-  );
-}
-
-function DropdownCities() {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleDropdown = () => setIsOpen(!isOpen);
-
-  return (
-    <div>
-      <div className="flex gap-5 justify-between py-3 pr-14 mt-5 w-full text-sm leading-5 rounded-sm border border-gray-300 border-solid text-sky-950 cursor-pointer" onClick={toggleDropdown}>
-        <div>Stopover Cities</div>
-        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6711331a7a01d381e3668778eb46261c46c102739c5a1f11369941d95f312479?apiKey=e35f36ff56764292afe21d9cb1dc1589&" className="shrink-0 w-4 aspect-square" alt="Expand icon" /> 
-      </div>
-      
-      {isOpen && (
-        <div className="flex flex-col">
-          <label>
-            <input type="checkbox" name="cities" value="New York" />
-            New York
-          </label>
-          <label>
-            <input type="checkbox" name="cities" value="London" />
-            London
-          </label>
-          <label>
-            <input type="checkbox" name="cities" value="Vancouver" />
-            Vancouver
-          </label>
-          <label>
-            <input type="checkbox" name="cities" value="Toronto" />
-            Toronto
-          </label>
-          <label>
-            <input type="checkbox" name="cities" value="Paris" />
-            Paris
-          </label>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function DropdownAirports() {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleDropdown = () => setIsOpen(!isOpen);
-
-  return (
-    <div>
-      <div className="flex gap-5 justify-between py-3 pr-14 mt-5 w-full text-sm leading-5 rounded-sm border border-gray-300 border-solid text-sky-950 cursor-pointer" onClick={toggleDropdown}>
-        <div>Airports</div>
-        <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6711331a7a01d381e3668778eb46261c46c102739c5a1f11369941d95f312479?apiKey=e35f36ff56764292afe21d9cb1dc1589&" className="shrink-0 w-4 aspect-square" alt="Expand icon" /> 
-      </div>
-      
-      {isOpen && (
-        <div className="flex flex-col">
-          <label>
-            <input type="checkbox" name="cities" value="New York" />
-            YVR
-          </label>
-          <label>
-            <input type="checkbox" name="cities" value="London" />
-            LAX
-          </label>
-          <label>
-            <input type="checkbox" name="cities" value="Vancouver" />
-            HND
-          </label>
-          <label>
-            <input type="checkbox" name="cities" value="Toronto" />
-            CDG
-          </label>
-          <label>
-            <input type="checkbox" name="cities" value="Paris" />
-            LHR
-          </label>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// const Airports = ({ airports }) => {
-//   return (
-//     <div className="flex flex-col">
-//       {airports.map((airport) => (
-//         <label key={airport.value}>
-//           <input type="checkbox" name="cities" value={airport.value} />
-//           {airport.label}
-//         </label>
-//       ))}
-//     </div>
-//   );
-// };
-
-
-// function DropdownBox({ airports }) {
-//   const [isOpen, setIsOpen] = useState(false);
-//   const toggleDropdown = () => setIsOpen(!isOpen);
-
-//   return (
-//     <div>
-//       <div className="flex gap-5 justify-between py-3 pr-14 mt-5 w-full text-sm leading-5 rounded-sm border border-gray-300 border-solid text-sky-950 cursor-pointer" onClick={toggleDropdown}>
-//         <div>{label}</div>
-//         <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6711331a7a01d381e3668778eb46261c46c102739c5a1f11369941d95f312479?apiKey=e35f36ff56764292afe21d9cb1dc1589&" className="shrink-0 w-4 aspect-square" alt="Expand icon" /> 
-//       </div>
-//       {isOpen && 
-//       <div>
-//       {airports.map((airport, index) => (
-//         <div key={index}>
-//           <input type="checkbox" id={`airport-${index}`} name="airport" value={airport.code} />
-//           <label htmlFor={`airport-${index}`}>{airport.name}</label>
-//         </div>
-//       ))}
-//     </div>
-//     }
-//     </div>
-//   );
-// }
 
 const TimeSlider = ({ label }) => {
   const [leftValue, setLeftValue] = useState(0);
@@ -219,17 +111,15 @@ const TimeSlider = ({ label }) => {
 };
 
 function MyComponent() {
-  var airports = ['YVR', 'LAX', 'HND', 'CDG', 'LHR'];
-
   return (
     <section className="flex flex-col max-w-[333px]">
       <header className="justify-center items-start px-9 py-3.5 w-full text-sm leading-5 text-center text-gray-500 whitespace-nowrap bg-sky-200">
         Preference
       </header>
       <main>
-        <Dropdown />
-        <DropdownCities />
-        <DropdownAirports />
+        <DropdownBox items={airlines} label="Airlines" isAirline />
+        <DropdownBox items={cities} label="Cities" />
+        <DropdownBox items={airports} label="Airports" />
         <h2 className="mt-5 w-full text-sm leading-5 text-black">Times</h2>
         <TimeSlider label="Departure time" value="00:00-24:00" />
         <TimeSlider label="Arrival time" value="00:00-24:00" />
