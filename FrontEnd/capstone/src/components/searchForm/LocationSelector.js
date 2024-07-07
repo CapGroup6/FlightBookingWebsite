@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import styles from '../../styles/SearchForm.module.css';
 import axios from 'axios';
 
@@ -19,6 +19,17 @@ const commonCities = [
   { cityName: "Singapore", iataCode: "SIN", countryName: "Singapore" },
   { cityName: "Bangkok", iataCode: "BKK", countryName: "Thailand" },
   { cityName: "Moscow", iataCode: "SVO", countryName: "Russia" },
+  { cityName: "Vancouver", iataCode: "YVR", countryName: "Canada" },
+  { cityName: "Montreal", iataCode: "YUL", countryName: "Canada" },
+  { cityName: "Calgary", iataCode: "YYC", countryName: "Canada" },
+  { cityName: "Ottawa", iataCode: "YOW", countryName: "Canada" },
+  { cityName: "Edmonton", iataCode: "YEG", countryName: "Canada" },
+  { cityName: "Halifax", iataCode: "YHZ", countryName: "Canada" },
+  { cityName: "Winnipeg", iataCode: "YWG", countryName: "Canada" },
+  { cityName: "Quebec City", iataCode: "YQB", countryName: "Canada" },
+  { cityName: "Victoria", iataCode: "YYJ", countryName: "Canada" },
+  { cityName: "Saskatoon", iataCode: "YXE", countryName: "Canada" },
+  { cityName: "Regina", iataCode: "YQR", countryName: "Canada" }
 ];
 
 const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }) => {
@@ -38,12 +49,13 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
             iataCode: item.iataCode,
             countryName: item.address.countryName
           }));
-          setOptions(cities);
+          setOptions([...commonCities, ...cities]);
         } else {
           setOptions(commonCities);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+        setOptions(commonCities); // 如果API请求失败，仍显示commonCities
       }
     };
 
@@ -53,26 +65,26 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      height: '40px',  // 固定高度
-      minHeight: '40px', // 固定最小高度
-      width: '240px', // 固定宽度
+      height: '40px',  
+      minHeight: '40px',
+      width: '240px',
       display: 'flex',
       alignItems: 'center'
     }),
     valueContainer: (provided) => ({
       ...provided,
-      height: '40px', // 确保值容器的高度一致
+      height: '40px', 
       display: 'flex',
       alignItems: 'center'
     }),
     input: (provided) => ({
       ...provided,
-      margin: '0', // 移除默认的内边距
-      padding: '0', // 移除默认的内边距
+      margin: '0', 
+      padding: '0', 
     }),
     placeholder: (provided) => ({
       ...provided,
-      height: '40px', // 确保占位符的高度一致
+      height: '40px', 
       display: 'flex',
       alignItems: 'center'
     }),
@@ -80,8 +92,21 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
       ...provided,
       display: 'flex',
       alignItems: 'center'
+    }),
+    option: (provided) => ({
+      ...provided,
+      display: 'flex',
+      alignItems: 'center',
+      height: '40px',
+      whiteSpace: 'nowrap',
     })
   };
+
+  const SingleValue = (props) => (
+    <components.SingleValue {...props}>
+      {props.data.cityName} ({props.data.iataCode})
+    </components.SingleValue>
+  );
 
   return (
     <div className={styles.dateInputWrapper}>
@@ -92,9 +117,11 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
         options={options.map(option => ({
           label: `${option.cityName}, ${option.countryName} (${option.iataCode})`,
           value: option.cityName,
+          cityName: option.cityName,
           iataCode: option.iataCode
         }))}
-        styles={customStyles} 
+        styles={customStyles}
+        components={{ SingleValue }}
       />
     </div>
   );

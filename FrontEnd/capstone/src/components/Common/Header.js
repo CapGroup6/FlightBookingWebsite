@@ -1,9 +1,23 @@
 import * as React from "react";
+import { useState } from "react";
 import Link from 'next/link';
 
 function Header() {
+  const [language, setLanguage] = useState("English");
+  const [currency, setCurrency] = useState("CAD");
+
+  const handleLanguageChange = (newLanguage) => {
+    setLanguage(newLanguage);
+    // 在这里添加切换语言的逻辑，比如调用i18n库
+  };
+
+  const handleCurrencyChange = (newCurrency) => {
+    setCurrency(newCurrency);
+    // 在这里添加切换货币的逻辑
+  };
+
   return (
-    <header className="flex flex-col w-full mt-0 p-0">
+    <header className="flex flex-col w-full mt-0 p-0 z-10">
       <div className="flex justify-between items-center w-full p-5 bg-white border-b">
         <div className="flex gap-2 items-center">
           <button className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl">
@@ -14,16 +28,16 @@ function Header() {
               alt="AI Chatbot Icon"
             />
             <span>
-                <Link href="../chatbot">
-                   AI Chatbot
-                </Link>
-              </span>
+              <Link href="../chatbot">
+                AI Chatbot
+              </Link>
+            </span>
           </button>
         </div>
-        <div className="flex gap-5 items-center text-gray-600 ml-auto">
+        <div className="flex gap-5 items-center text-gray-600 ml-auto z-10">
           <div className="relative group">
             <button className="flex items-center gap-2 text-xl">
-              Language
+              {language}
               <img
                 loading="lazy"
                 src="https://cdn.builder.io/api/v1/image/assets/TEMP/50eb79d754ade9d8ac5e40350c6ab2eae4faaf08a074363f7e75defcfff6a888?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
@@ -32,13 +46,13 @@ function Header() {
               />
             </button>
             <div className="absolute hidden group-hover:block bg-white border rounded mt-1 w-full">
-              <a href="#" className="block px-4 py-2 text-gray-800">English</a>
-              <a href="#" className="block px-4 py-2 text-gray-800">中文</a>
+              <a href="#" className="block px-4 py-2 text-gray-800" onClick={() => handleLanguageChange("English")}>English</a>
+              <a href="#" className="block px-4 py-2 text-gray-800" onClick={() => handleLanguageChange("中文")}>中文</a>
             </div>
           </div>
-          <div className="relative group">
+          <div className="relative group z-10">
             <button className="flex items-center gap-2 text-xl">
-              Currency
+              {currency}
               <img
                 loading="lazy"
                 src="https://cdn.builder.io/api/v1/image/assets/TEMP/50eb79d754ade9d8ac5e40350c6ab2eae4faaf08a074363f7e75defcfff6a888?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
@@ -47,14 +61,14 @@ function Header() {
               />
             </button>
             <div className="absolute hidden group-hover:block bg-white border rounded mt-1 w-full">
-              <a href="#" className="block px-4 py-2 text-gray-800">USD</a>
-              <a href="#" className="block px-4 py-2 text-gray-800">CAD</a>
+              <a href="#" className="block px-4 py-2 text-gray-800" onClick={() => handleCurrencyChange("USD")}>USD</a>
+              <a href="#" className="block px-4 py-2 text-gray-800" onClick={() => handleCurrencyChange("CAD")}>CAD</a>
             </div>
           </div>
           <button className="text-xl">
-              <Link href="./Login/login">
-                Register/Sign in
-              </Link>
+            <Link href="./Login/login">
+              Register/Sign in
+            </Link>
           </button>
         </div>
         <div className="flex items-center ml-5">
