@@ -9,6 +9,7 @@ import styles from '../../styles/SearchForm.module.css';
 import ResultCardLogic from '../Result/ResultCardLogic';
 import ResultLeftLogic from '../Result/ResultLeftLogic';
 import ResultRightLogic from '../Result/ResultRightLogic';
+import Filter from '../Result/filter';
 
 
 
@@ -18,7 +19,7 @@ const SearchForm = ({ onSearch }) => {
   const [destination, setDestination] = useState(null);
   const [userInputDeparture, setUserInputDeparture] = useState('');
   const [userInputDestination, setUserInputDestination] = useState('');
-  const [departureDate, setDepartureDate] = useState(new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]);
+  const [departureDate, setDepartureDate] = useState(new Date().toISOString().split('T')[0]);
   const [returnDate, setReturnDate] = useState(new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
@@ -31,6 +32,7 @@ const SearchForm = ({ onSearch }) => {
   const [matchingItineraries, setMatchingItineraries] = useState([]);
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [showFilter, setShowFilter] = useState(false);
 
   
 
@@ -42,6 +44,7 @@ const SearchForm = ({ onSearch }) => {
     }
 
     setLoading(true);
+    setShowFilter(true);
     setButtonClicked(true);
 
     const params = {
@@ -100,7 +103,7 @@ const SearchForm = ({ onSearch }) => {
   const passengersCount = adults + children + infants;
 
   return (
-    <div className="relative flex flex-col items-end px-16 pt-20 max-md:pl-5">
+    <div className="relative flex flex-col pt-20 ">
       <form onSubmit={handleSubmit} className={`flex gap-2 justify-between items-end pr-6 pb-3 pl-2.5 mt-48 bg-white rounded-lg shadow-sm ${styles.searchFormContainer} max-md:flex-wrap max-md:pr-5 max-md:mt-7`}>
         <div className="flex flex-col self-stretch gap-0.5 max-md:max-w-full">
           <div className={`flex z-10 gap-1 py-1 pr-20 pl-3 w-full text-sm leading-2 text-sky-950 ${styles.searchFormInner} max-md:flex-wrap max-md:pr-5 max-md:max-w-full`}>
@@ -156,14 +159,11 @@ const SearchForm = ({ onSearch }) => {
                   srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
                   className="img"
                 />
-                {tripType.value === 'Round-Trip' ? (
-                  <img
+                <img
                   loading="lazy"
                   srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
                   className="img"
-                />) : (null)
-                }
-                
+                />
               </div>
               <LocationSelector
                 userInput={userInputDestination}
@@ -189,7 +189,7 @@ const SearchForm = ({ onSearch }) => {
           </div>
         </div>
       </form>
-      <div className='w-[850px]'>
+      <div>
         { apiResults.length > 0 && tripType.value === 'One-Way' ? (
           <div>
             <ResultCardLogic 
@@ -197,20 +197,27 @@ const SearchForm = ({ onSearch }) => {
             passenger={passengersCount}/>
           </div>
         ) : (
-          <div className="flex">
-            <div className='flex flex-col'>
-            <ResultLeftLogic
-              apiResults={apiResults.filter(result => result.itineraries.length === 2)}
-              handleCardClick={handleCardClick}
-              passenger={passengersCount}
-              selectedCard={selectedCard}
-            />
+          <div className="flex flex-row gap-5">
+            <div className="w-[80%] relative max-w-[350px]">
+              {showFilter && <Filter />}
             </div>
-            <div className='flex flex-col'>
-            <ResultRightLogic
-              matchingItineraries={matchingItineraries.filter(result => result.itineraries.length === 2)}
-              price = {selectedPrice}
-            />
+            <div className='flex flex-1 items-start justify-end'>
+              <div className='flex flex-row'>
+                <div className='flex flex-col'>
+                <ResultLeftLogic
+                  apiResults={apiResults.filter(result => result.itineraries.length === 2)}
+                  handleCardClick={handleCardClick}
+                  passenger={passengersCount}
+                  selectedCard={selectedCard}
+                />
+                </div>
+                <div className='flex flex-col'>
+                <ResultRightLogic
+                  matchingItineraries={matchingItineraries.filter(result => result.itineraries.length === 2)}
+                  price = {selectedPrice}
+                />
+                </div>
+              </div>
             </div>
           </div>
         )}
