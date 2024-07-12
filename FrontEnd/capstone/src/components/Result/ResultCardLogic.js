@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ResultsCard from "./ResultsCard"; // UI component for left results
 
-const ResultCardLogic = ({ apiResults, passenger }) => {
+const ResultCardLogic = ({ apiResults, passenger, tripType }) => {
   
 //transfer airline capiatalize
   const capitalizeWords = (str) => {
@@ -21,6 +21,8 @@ const ResultCardLogic = ({ apiResults, passenger }) => {
     });
   };
 
+
+
   return (
     <div>
       {apiResults.map((result, index) => (
@@ -35,14 +37,28 @@ const ResultCardLogic = ({ apiResults, passenger }) => {
           const stopoverDurations = calculateStopoverDuration(segments);
 
           const travelerPricing = result.travelerPricings[0]; 
-          const hasCheckedBags = segments.some(segment => {
-            const fareDetails = travelerPricing.fareDetailsBySegment.find(fd => fd.segmentId === segment.id);
-            return fareDetails?.includedCheckedBags && fareDetails.includedCheckedBags.weight > 0;
-          });
+          const hasCarryOnbags = result.pricingOptions.includedCheckedBagsOnly;
 
           stopLocations = Array.isArray(stopLocations) ? stopLocations : [];
           const formattedStopLocations = stopLocations.map((location, index) => `${stopoverDurations[index]} at ${location}`);
 
+          const leftDetails = {
+            airline: capitalizeWords(firstSegment.airlineName),
+            flightNumber: firstSegment.number,
+            departureTime: firstSegment.departure.at,
+            arrivalTime: lastSegment.arrival.at,
+            departureLocation: firstSegment.departure.iataCode,
+            arrivalLocation: lastSegment.arrival.iataCode,
+            cabin: travelerPricing.fareDetailsBySegment[0].cabin,
+            validatingAirlineCodes: result.validatingAirlineCodes,
+            airlineNumber: firstSegment.number,
+            numberOfBookableSeats: result.numberOfBookableSeats,
+            checkInWeight: travelerPricing.fareDetailsBySegment[0].includedCheckedBags.weight,
+            refund: result.pricingOptions.refundableFare,
+            restrict: result.pricingOptions.noRestrictionFare,
+            penalty: result.pricingOptions.noPenaltyFare,
+          };
+        
           return (
             <ResultsCard
               key={`${index}-${itineraryIndex}`}
@@ -56,9 +72,11 @@ const ResultCardLogic = ({ apiResults, passenger }) => {
               numberOfStops={segments.length - 1}
               stopLocations={formattedStopLocations}
               price={`${travelerPricing.price.total}`}
-              hasCheckedBags={hasCheckedBags}
+              hasCarryOnbags={!hasCarryOnbags}
               totalPassengerPrice={result.price.total}
               passenger={passenger}
+              leftDetails={leftDetails}
+              tripType={tripType}
             />
           );
         })

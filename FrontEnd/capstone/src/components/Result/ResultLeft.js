@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import DetailButton from "../Common/DetailButton";
+import DetailDropdown from "../Common/DetailDropdown"; // Import the new component
 
 function formatDuration(duration) {
   if (!duration) return "N/A";
@@ -9,7 +11,7 @@ function formatDuration(duration) {
   return `${hours}h${minutes}m`;
 }
 
-function ResultsCard({
+function ResultLeft({
   airline,
   flightNumber,
   departureTime,
@@ -22,12 +24,21 @@ function ResultsCard({
   price,
   totalPassengerPrice,
   passenger,
-  hasCheckedBags,
+  hasCarryOnbags,
   onClick,
   isSelected,
+  cabin,
+  validatingAirlineCodes,
+  airlineNumber,
+  numberOfBookableSeats,
+  checkInWeight,
+  refund,
+  restrict,
+  penalty
 }) {
   const totalPrice = parseFloat(price);
   const [convertedPrice, setConvertedPrice] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false); // State for dropdown visibility
 
   useEffect(() => {
     const convertCurrency = async () => {
@@ -47,6 +58,10 @@ function ResultsCard({
   const departureDate = new Date(departureTime);
   const arrivalDate = new Date(arrivalTime);
   const dayDifference = arrivalDate.getDate() - departureDate.getDate();
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown); // Toggle dropdown visibility
+  };
 
   return (
     <div onClick={onClick} className={`relative px-6 pt-1.5 pb-5 shadow-sm w-[390px] max-md:px-5 hover:bg-gray-100 ${isSelected ? 'bg-gray-100' : ''}`}>
@@ -94,13 +109,13 @@ function ResultsCard({
           <div className="flex flex-col">
             <div className="flex flex-col justify-center text-xs leading-6 text-center text-red-700 capitalize">
               <div className="absolute right-7 top-1.5 justify-center px-2 py-px mt-1.5 bg-red-50 rounded-lg">
-                {hasCheckedBags ? (
+                {hasCarryOnbags ? (
                   <div className="bg-green-300 bg-opacity-60">
-                    check-in bag
+                    carry-on bag
                   </div>
                 ) : (
                   <div className="text-red-500 bg-[#FFF2F2]">
-                    no check-in bag
+                    no carry-on bag
                   </div>
                 )}
               </div>
@@ -118,8 +133,19 @@ function ResultsCard({
           </div>
         </div>
       </div>
+      <DetailDropdown 
+        visible={showDropdown}
+        cabin={cabin}
+        validatingAirlineCodes={validatingAirlineCodes}
+        airlineNumber={airlineNumber}
+        numberOfBookableSeats={numberOfBookableSeats}
+        checkInWeight={checkInWeight}
+        refund={refund}
+        restrict={restrict}
+        penalty={penalty}
+      />
     </div>
   );
 }
 
-export default ResultsCard;
+export default ResultLeft;

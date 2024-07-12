@@ -19,13 +19,12 @@ const SearchForm = ({ onSearch }) => {
   const [destination, setDestination] = useState(null);
   const [userInputDeparture, setUserInputDeparture] = useState('');
   const [userInputDestination, setUserInputDestination] = useState('');
-  const [departureDate, setDepartureDate] = useState(new Date().toISOString().split('T')[0]);
+  const [departureDate, setDepartureDate] = useState(new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]);
   const [returnDate, setReturnDate] = useState(new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
-  const [cabinClass, setCabinClass] = useState({ label: 'Economy', value: 'Economy' });
-  const [addNearbyAirport, setAddNearbyAirport] = useState(false);
+  const [cabinClass, setCabinClass] = useState({ label: 'Economy', value: 'ECONOMY' });
   const [apiResults, setApiResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
@@ -33,6 +32,8 @@ const SearchForm = ({ onSearch }) => {
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
+  const [leftDetails, setLeftDetails] = useState(null);
+  const [rightDetails, setRightDetails] = useState(null);
 
   
 
@@ -56,7 +57,6 @@ const SearchForm = ({ onSearch }) => {
       children,
       infants,
       cabinClass: cabinClass.value,
-      addNearbyAirport,
     };
 
     const queryString = Object.keys(params)
@@ -85,14 +85,32 @@ const SearchForm = ({ onSearch }) => {
     );
   
     setMatchingItineraries(matches);
+
+    // Extract left details from selectedCard
+    const leftDetails = {
+      cabin: selectedCard.travelerPricings[0].fareDetailsBySegment[0].cabin,
+      validatingAirlineCodes: selectedCard.validatingAirlineCodes,
+      airlineNumber: selectedCard.itineraries[0].segments[0].number,
+      numberOfBookableSeats: selectedCard.numberOfBookableSeats,
+      checkInWeight: selectedCard.travelerPricings[0].fareDetailsBySegment[0].includedCheckedBags.weight,
+      refund: selectedCard.pricingOptions.refundableFare,
+      restrict: selectedCard.pricingOptions.noRestrictionFare,
+      penalty: selectedCard.pricingOptions.noPenaltyFare,
+    };
+    setLeftDetails(leftDetails);
   };
   
+  const handleRightDetails = (rightDetails) => {
+    setRightDetails(rightDetails);
+  };
+  
+
   useEffect(() => {
     if (apiResults.length > 0) {
       // Handle submit logic if needed
       handleSubmit(new Event('submit'));
     }
-  }, [departure, destination, departureDate, returnDate, adults, children, infants, cabinClass, addNearbyAirport]);
+  }, [departure, destination, departureDate, returnDate, adults, children, infants, cabinClass]);
 
   useEffect(() => {
     if (apiResults.length > 0) {
@@ -159,11 +177,14 @@ const SearchForm = ({ onSearch }) => {
                   srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
                   className="img"
                 />
-                <img
-                  loading="lazy"
-                  srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
-                  className="img"
-                />
+                 {tripType.value === 'Round-Trip' ? (
+                  <img
+                    loading="lazy"
+                    srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
+                    className="img"
+                  />
+                  ) : (null)
+                }
               </div>
               <LocationSelector
                 userInput={userInputDestination}
@@ -190,11 +211,21 @@ const SearchForm = ({ onSearch }) => {
         </div>
       </form>
       <div>
+      <h2>API Results</h2>
+      <pre>{JSON.stringify(apiResults, null, 2)}</pre>
+    </div>
+      <div>
         { apiResults.length > 0 && tripType.value === 'One-Way' ? (
-          <div>
-            <ResultCardLogic 
-            apiResults={apiResults.filter(result => result.itineraries.length === 1)} 
-            passenger={passengersCount}/>
+          <div className="flex flex-row gap-5">
+            <div className="w-[80%] relative max-w-[350px]">
+              {showFilter && <Filter />}
+            </div> 
+            <div>
+              <ResultCardLogic 
+              apiResults={apiResults.filter(result => result.itineraries.length === 1)} 
+              passenger={passengersCount}
+              tripType={tripType.value}/>
+            </div>
           </div>
         ) : (
           <div className="flex flex-row gap-5">
@@ -215,6 +246,8 @@ const SearchForm = ({ onSearch }) => {
                 <ResultRightLogic
                   matchingItineraries={matchingItineraries.filter(result => result.itineraries.length === 2)}
                   price = {selectedPrice}
+                  leftDetails={leftDetails} // Pass left details as a prop
+                  onRightDetailsUpdate={handleRightDetails} // Callback to update right details
                 />
                 </div>
               </div>

@@ -3,13 +3,13 @@ import styles from '../../styles/SearchForm.module.css';
 
 const DateSelector = ({ tripType, departureDate, setDepartureDate, returnDate, setReturnDate }) => {
   const customStyles = {
-    height: '40px',  // 固定高度
+    height: '40px',  
     width: '170px', 
-    padding: '0 10px', // 内边距，确保内容不会紧贴边框
+    padding: '0 10px',
     display: 'flex',
     alignItems: 'center',
-    borderRadius: '4px', // 圆角
-    border: '1px solid #ccc', // 边框颜色
+    borderRadius: '4px',
+    border: '1px solid #ccc', 
   };
 
   const lineStyle = {

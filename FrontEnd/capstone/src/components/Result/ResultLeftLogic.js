@@ -40,10 +40,7 @@ const ResultLeftLogic = ({ apiResults, handleCardClick, passenger, selectedCard 
     const stopoverDurations = calculateStopoverDuration(segments);
 
     const travelerPricing = result.travelerPricings ? result.travelerPricings[0] : null;
-    const hasCheckedBags = segments.some(segment => {
-      const fareDetails = travelerPricing ? travelerPricing.fareDetailsBySegment.find(fd => fd.segmentId === segment.id) : null;
-      return fareDetails?.includedCheckedBags && fareDetails.includedCheckedBags.weight > 0;
-    });
+    const hasCarryOnbags = result.pricingOptions.includedCheckedBagsOnly;
 
     stopLocations = Array.isArray(stopLocations) ? stopLocations : [];
     const formattedStopLocations = stopLocations.map((location, index) => `${stopoverDurations[index]} at ${location}`);
@@ -62,7 +59,7 @@ const ResultLeftLogic = ({ apiResults, handleCardClick, passenger, selectedCard 
         stopLocations={formattedStopLocations}
         price={`${travelerPricing.price.total}`}
         totalPassengerPrice={result.price.total}
-        hasCheckedBags={hasCheckedBags}
+        hasCarryOnbags={!hasCarryOnbags}
         onClick={() => handleCardClick(result)}
         passenger={passenger}
         isSelected={result === selectedCard}
