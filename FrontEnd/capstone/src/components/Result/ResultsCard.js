@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DetailButton from "../Common/DetailButton";
+import DetailDropdown from "../Common/DetailDropdown"; // Import the new component
 
 function formatDuration(duration) {
   if (!duration) return "N/A";
@@ -19,14 +20,17 @@ function ResultsCard({
   arrivalLocation,
   duration,
   numberOfStops,
-  stopLocations = [], // Ensure this prop is an array
+  stopLocations = [],
   price,
   totalPassengerPrice,
-  hasCheckedBags,
-  passenger
+  hasCarryOnbags,
+  passenger,
+  leftDetails,
+  tripType
 }) {
   const totalPrice = parseFloat(price);
   const [convertedPrice, setConvertedPrice] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false); // State for dropdown visibility
 
   useEffect(() => {
     const convertCurrency = async () => {
@@ -46,6 +50,10 @@ function ResultsCard({
   const departureDate = new Date(departureTime);
   const arrivalDate = new Date(arrivalTime);
   const dayDifference = arrivalDate.getDate() - departureDate.getDate();
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown); // Toggle dropdown visibility
+  };
 
   return (
     <div className="flex flex-col justify-center shadow-sm w-[850px] mb-4">
@@ -93,17 +101,17 @@ function ResultsCard({
             </div>
             <div className="flex flex-col ml-5 w-[29%] max-md:ml-0 max-md:w-full">
               <div className="flex flex-col grow max-md:mt-10">
-                {hasCheckedBags ? (
+                {hasCarryOnbags ? (
                   <div className="justify-center self-start px-2 py-px ml-4 text-xs leading-6 text-center text-lime-700 capitalize rounded-lg bg-green-300 bg-opacity-60 max-md:ml-2.5">
-                    check-in bag
+                    carry-on bag
                   </div>
                 ) : (
                   <div className="justify-center self-start px-2 py-px ml-4 text-xs leading-6 text-center text-red-500 capitalize rounded-lg bg-[#FFF2F2] max-md:ml-2.5">
-                    no check-in bag
+                    no carry-on bag
                   </div>
                 )}
                 <div className="flex gap-5 mt-3">
-                  <div className="flex flex-col">
+                  <div className="flex-col">
                     <div className="flex-auto my-auto text-xl font-semibold leading-5 text-right text-sky-950">
                       ${convertedPrice || 'N/A'}
                     </div>
@@ -113,11 +121,16 @@ function ResultsCard({
                       </div>
                      )}
                   </div>
-                  <DetailButton/>
+                  <DetailButton onClick={toggleDropdown} showDetails={showDropdown} />
                 </div>
               </div>
             </div>
           </div>
+          <DetailDropdown 
+            visible={showDropdown}
+            tripType={tripType}
+            leftDetails={leftDetails}
+          />
         </div>
       </div>
     </div>

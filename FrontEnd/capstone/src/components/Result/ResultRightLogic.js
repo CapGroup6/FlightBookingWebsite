@@ -1,9 +1,7 @@
 import React from "react";
-import ResultRight from "./ResultRight"; // UI component for right results
+import ResultRight from "./ResultRight";
 
-const ResultRightLogic = ({ matchingItineraries, price }) => {
-
-//transfer airline capiatalize
+const ResultRightLogic = ({ matchingItineraries, price, leftDetails, onRightDetailsUpdate }) => {
   const capitalizeWords = (str) => {
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
   };
@@ -24,7 +22,6 @@ const ResultRightLogic = ({ matchingItineraries, price }) => {
   return (
     <div>
       {matchingItineraries.map((result, idx) => {
-
         let stopLocations = [];
         const segments = result.itineraries[1].segments;
         const firstSegment = segments[0];
@@ -35,29 +32,49 @@ const ResultRightLogic = ({ matchingItineraries, price }) => {
         const stopoverDurations = calculateStopoverDuration(segments);
 
         const travelerPricing = result.travelerPricings[0];
-        const hasCheckedBags = segments.some(segment => {
-          const fareDetails = travelerPricing.fareDetailsBySegment.find(fd => fd.segmentId === segment.id);
-          return fareDetails?.includedCheckedBags && fareDetails.includedCheckedBags.weight > 0;
-        });
+        const hasCarryOnbags = result.pricingOptions.includedCheckedBagsOnly;
 
         stopLocations = Array.isArray(stopLocations) ? stopLocations : [];
         const formattedStopLocations = stopLocations.map((location, index) => `${stopoverDurations[index]} at ${location}`);
 
+        const rightDetails = {
+          airline: capitalizeWords(firstSegment.airlineName),
+          flightNumber: firstSegment.number,
+          departureTime: firstSegment.departure.at,
+          arrivalTime: lastSegment.arrival.at,
+          departureLocation: firstSegment.departure.iataCode,
+          arrivalLocation: lastSegment.arrival.iataCode,
+          cabin: travelerPricing.fareDetailsBySegment[0].cabin,
+          validatingAirlineCodes: result.validatingAirlineCodes,
+          airlineNumber: firstSegment.number,
+          numberOfBookableSeats: result.numberOfBookableSeats,
+          checkInWeight: travelerPricing.fareDetailsBySegment[0].includedCheckedBags.weight,
+          refund: result.pricingOptions.refundableFare,
+          restrict: result.pricingOptions.noRestrictionFare,
+          penalty: result.pricingOptions.noPenaltyFare,
+        };
+
+        onRightDetailsUpdate(rightDetails);
+
         return (
           <ResultRight
             key={`result-right-${idx}`}
-            airline={capitalizeWords(firstSegment.airlineName)}
-            flightNumber={firstSegment.number}
-            departureTime={firstSegment.departure.at}
-            arrivalTime={lastSegment.arrival.at}
-            departureLocation={firstSegment.departure.iataCode}
-            arrivalLocation={lastSegment.arrival.iataCode}
+            airline={rightDetails.airline}
+            flightNumber={rightDetails.flightNumber}
+            departureTime={rightDetails.departureTime}
+            arrivalTime={rightDetails.arrivalTime}
+            departureLocation={rightDetails.departureLocation}
+            arrivalLocation={rightDetails.arrivalLocation}
             duration={result.itineraries[0].duration}
             numberOfStops={segments.length - 1}
             stopLocations={formattedStopLocations}
             price={`${travelerPricing.price.total}`}
-            hasCheckedBags={hasCheckedBags}
+            hasCarryOnbags={!hasCarryOnbags}
             goPrice={price}
+            showDropdown={rightDetails.showDropdown}
+            toggleDropdown={rightDetails.toggleDropdown}
+            leftDetails={leftDetails} // Pass left details as a prop
+            rightDetails={rightDetails}
           />
         );
       })}
