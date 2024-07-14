@@ -4,8 +4,11 @@ const ChatWindow = ({ conversations }) => {
   if (!conversations) return null;
 
   const renderMessageText = (text) => {
-    if (typeof text === 'object' && text !== null && text.data) {
-      return text.data;
+    if (typeof text === 'object' && text !== null) {
+      if (text.data) {
+        return text.data;
+      }
+      return JSON.stringify(text);
     }
     return text;
   };
