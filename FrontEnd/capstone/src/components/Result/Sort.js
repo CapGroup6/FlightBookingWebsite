@@ -9,15 +9,14 @@ const sortOptions = [
   { label: 'Recommend', value: 'recommend' }
 ];
 
-const Sort = () => {
+const Sort = ({ updateResults }) => {
   const [sortCriteria, setSortCriteria] = useState(null);
-  const [sortedData, setSortedData] = useState([]);
 
   const handleSortChange = async (selectedOption) => {
     setSortCriteria(selectedOption);
     try {
       const response = await axios.get(`http://localhost:8080/result/sort?sortBy=${selectedOption.value}`);
-      setSortedData(response.data);
+      const sortedData = response.data;
       updateResults(sortedData);
     } catch (error) {
       console.error('Error fetching sorted data:', error);
@@ -25,7 +24,7 @@ const Sort = () => {
   };
 
   return (
-    <div className={styles.noBorder}>
+    <div className={styles.noBorder} style={{ width: '350px' }}>
       <Select
         classNamePrefix="noBorder"
         placeholder="Sort By"
@@ -41,7 +40,8 @@ const Sort = () => {
             '&:hover': {
               border: 'none'
             },
-            width: '150px',
+            width: '314px',
+            paddingLeft: '14px',
           }),
           valueContainer: (base) => ({
             ...base,
@@ -60,6 +60,8 @@ const Sort = () => {
           })
         }}
       />
+      <div>
+      </div>
     </div>
   );
 };

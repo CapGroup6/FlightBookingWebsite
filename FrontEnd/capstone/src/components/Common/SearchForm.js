@@ -106,7 +106,7 @@ const SearchForm = ({ onSearch }) => {
   };
 
   const updateResults = (updatedResults) => {
-    setResults(updatedResults);
+    setApiResults(updatedResults);
   };
 
 
@@ -215,10 +215,6 @@ const SearchForm = ({ onSearch }) => {
           </div>
         </div>
       </form>
-      <div>
-        <h2>API Results</h2>
-        <pre>{JSON.stringify(apiResults, null, 2)}</pre>
-      </div>
       <div>
         {apiResults.length > 0 && tripType.value === 'One-Way' ? (
           <div className="flex flex-row gap-5">

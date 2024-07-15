@@ -4,7 +4,7 @@ import SearchForm from '../components/Common/SearchForm';
 import BackgroundPicture from '../components/Common/BackgroundPicture';
 import DateExpansion from '../components/Result/DateExpansion';
 import ResultCard from '../components/Result/ResultsCard';
-import styles from '../styles/Home.module.css'; 
+import styles from '../styles/Home.module.css';
 import Sort from '../components/Result/Sort';
 
 function Home() {
@@ -20,13 +20,10 @@ function Home() {
       <div className={styles.relative}>
         <BackgroundPicture />
         <div className={styles.overlayIn}>
-          <SearchForm onSearch={handleSearch}/>
+          <SearchForm onSearch={handleSearch} />
           {/*{searchParams && (
              <DateExpansion baseDate={new Date(searchParams.departureDate)} />
           )}*/}
-        </div>
-        <div>
-          <Sort/>
         </div>
       </div>
     </div>
