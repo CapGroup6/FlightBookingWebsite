@@ -32,6 +32,7 @@ function ResultRight({
   refund,
   restrict,
   penalty,
+  tripType,
   leftDetails,
   rightDetails,
 }) {
@@ -140,6 +141,7 @@ function ResultRight({
         refund={refund}
         restrict={restrict}
         penalty={penalty}
+        tripType={tripType}
         leftDetails={leftDetails}
         rightDetails={rightDetails}
       />

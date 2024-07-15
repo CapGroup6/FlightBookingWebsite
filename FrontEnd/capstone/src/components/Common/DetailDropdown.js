@@ -9,7 +9,7 @@ const DetailDropdown = ({ visible, tripType, leftDetails, rightDetails }) => {
       style={{ width: '300px' }}
     >
        <ul className="leading-8">
-        {tripType='' ? (
+        {tripType==='Round-Trip' ? (
           <>
             <div className='text-center'><strong>Departure</strong></div>
             <li><strong>Cabin: </strong>{leftDetails.cabin}</li>
@@ -30,7 +30,7 @@ const DetailDropdown = ({ visible, tripType, leftDetails, rightDetails }) => {
           </>
         ) : (
           <>
-            <li><strong></strong>{leftDetails.cabin}</li>
+            <li><strong>Cabin: </strong>{leftDetails.cabin}</li>
             <li><strong>Airline: </strong>{leftDetails.validatingAirlineCodes.join(', ')}{leftDetails.airlineNumber}</li>
             <li><strong>Number of Bookable Seats: </strong>{leftDetails.numberOfBookableSeats}</li>
             <li><strong>Check-In Weight: </strong>{leftDetails.checkInWeight}</li>

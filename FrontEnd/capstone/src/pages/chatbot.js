@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Navbar from '../components/Chatbot/Navbar';
+import Header from '../components/Common/Header';
 import Sidebar from '../components/Chatbot/Sidebar';
 import Guidance from '../components/Chatbot/Guidance';
 import ChatWindow from '../components/Chatbot/ChatWindow';
@@ -123,7 +123,7 @@ function Chatbot() {
 
   return (
     <div className="flex flex-col h-screen">
-      <Navbar />
+      <Header />
       <div className="flex flex-grow overflow-hidden">
         <Sidebar
           conversations={conversations}

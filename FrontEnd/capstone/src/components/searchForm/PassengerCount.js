@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Select, { components } from 'react-select';
 import styles from '../../styles/SearchForm.module.css';
 
@@ -16,6 +16,12 @@ const MultiValueRemove = () => null; // Hides the remove "x" button
 const ClearIndicator = () => null;
 
 const PassengerCount = ({ adults, setAdults, children, setChildren, infants, setInfants }) => {
+  const [selectId, setSelectId] = useState('');
+
+  useEffect(() => {
+    setSelectId(`passenger-count-select-${Math.floor(Math.random() * 1000)}`);
+  }, []);
+
   const passengerOptions = [
     {
       label: `Adults: ${adults}`,
@@ -54,6 +60,7 @@ const PassengerCount = ({ adults, setAdults, children, setChildren, infants, set
 
   return (
     <Select
+      inputId={selectId}
       placeholder={`Adults: ${adults}, Children: ${children}, Infants: ${infants}`}
       components={{ Option, MultiValueRemove, ClearIndicator }} // Hides the "x" button
       options={passengerOptions}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import styles from '../../styles/SearchForm.module.css';
 
@@ -8,9 +8,16 @@ const tripTypeOptions = [
 ];
 
 const TripType = ({ tripType, setTripType }) => {
+  const [selectId, setSelectId] = useState('');
+
+  useEffect(() => {
+    setSelectId(`trip-type-select-${Math.floor(Math.random() * 1000)}`);
+  }, []);
+
   return (
     <div className={styles.noBorder}>
       <Select
+        inputId={selectId || 'trip-type-select'}
         classNamePrefix="noBorder"
         placeholder="Round-Trip"
         value={tripType}
@@ -25,7 +32,7 @@ const TripType = ({ tripType, setTripType }) => {
             '&:hover': {
               border: 'none'
             },
-            width: '120px', // 调整宽度以适应内容
+            width: '120px',
           }),
           valueContainer: (base) => ({
             ...base,

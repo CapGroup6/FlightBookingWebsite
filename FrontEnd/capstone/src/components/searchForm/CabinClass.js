@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import styles from '../../styles/SearchForm.module.css';
 
@@ -10,9 +10,16 @@ const cabinClassOptions = [
 ];
 
 const CabinClass = ({ cabinClass, setCabinClass }) => {
+  const [selectId, setSelectId] = useState('');
+
+  useEffect(() => {
+    setSelectId(`cabin-class-select-${Math.floor(Math.random() * 1000)}`);
+  }, []);
+
   return (
     <div className={styles.noBorder}>
       <Select
+        inputId={selectId}
         classNamePrefix="noBorder"
         placeholder="Economy"
         value={cabinClass}
@@ -27,7 +34,7 @@ const CabinClass = ({ cabinClass, setCabinClass }) => {
             '&:hover': {
               border: 'none'
             },
-            width: 'auto', 
+            width: 'auto',
             display: 'flex',
             flexWrap: 'nowrap'
           }),
@@ -50,7 +57,7 @@ const CabinClass = ({ cabinClass, setCabinClass }) => {
           }),
           option: (provided) => ({
             ...provided,
-            whiteSpace: 'nowrap', 
+            whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
           })

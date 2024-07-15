@@ -82,8 +82,8 @@ function ResultLeft({
               </div>
               <div className="flex flex-col items-center mt-1.5 text-xs leading-4 text-slate-400">
                 <div>{formatDuration(duration)}</div>
-                <img 
-                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/070d9972c3125d39f54cee77a30bac328c43b206a4eb957f4a205f2e8262c3e3?apiKey=bfbc62932a264251916c1c27ced3ccfe&" 
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/070d9972c3125d39f54cee77a30bac328c43b206a4eb957f4a205f2e8262c3e3?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
                   className="mt-1 aspect-[8.33] w-[148px]" />
                 <div className="mt-1.5">
                   {numberOfStops === 0 ? 'Nonstop' : `${stopLocations.join(', ')}`}
@@ -108,13 +108,13 @@ function ResultLeft({
           </div>
           <div className="flex flex-col">
             <div className="flex flex-col justify-center text-xs leading-6 text-center text-red-700 capitalize">
-              <div className="absolute right-7 top-1.5 justify-center px-2 py-px mt-1.5 bg-red-50 rounded-lg">
+              <div className="absolute right-7 top-1.5 justify-center px-2 py-px mt-1.5 rounded-lg">
                 {hasCarryOnbags ? (
-                  <div className="bg-green-300 bg-opacity-60">
+                  <div className="justify-center self-start px-2 py-px ml-4 text-xs leading-6 text-center text-lime-700 capitalize rounded-lg bg-green-300 bg-opacity-60 max-md:ml-2.5 whitespace-nowrap">
                     carry-on bag
                   </div>
                 ) : (
-                  <div className="text-red-500 bg-[#FFF2F2]">
+                  <div className="justify-center self-start px-2 py-px ml-4 text-xs leading-6 text-center text-red-500 capitalize rounded-lg bg-[#FFF2F2] max-md:ml-2.5 whitespace-nowrap">
                     no carry-on bag
                   </div>
                 )}
@@ -124,16 +124,16 @@ function ResultLeft({
               <div className="absolute right-5 top-10 self-end mt-4 text-base font-semibold leading-5 text-right text-sky-950">
                 ${convertedPrice || 'N/A'}
               </div>
-              {passenger > 1 && (  
+              {passenger > 1 && (
                 <div className="absolute right-5 top-13 right-5 bottom-5 self-end mt-4 text-xs leading-5 text-right text-slate-400">
                   Total:${Math.floor(totalPassengerPrice) || 'N/A'}
                 </div>
-                )}
+              )}
             </div>
           </div>
         </div>
       </div>
-      <DetailDropdown 
+      <DetailDropdown
         visible={showDropdown}
         cabin={cabin}
         validatingAirlineCodes={validatingAirlineCodes}

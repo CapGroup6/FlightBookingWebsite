@@ -1,7 +1,7 @@
 import React from "react";
 import ResultRight from "./ResultRight";
 
-const ResultRightLogic = ({ matchingItineraries, price, leftDetails, onRightDetailsUpdate }) => {
+const ResultRightLogic = ({ matchingItineraries, price, leftDetails, onRightDetailsUpdate, tripType }) => {
   const capitalizeWords = (str) => {
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
   };
@@ -54,7 +54,6 @@ const ResultRightLogic = ({ matchingItineraries, price, leftDetails, onRightDeta
           penalty: result.pricingOptions.noPenaltyFare,
         };
 
-        onRightDetailsUpdate(rightDetails);
 
         return (
           <ResultRight
@@ -73,8 +72,10 @@ const ResultRightLogic = ({ matchingItineraries, price, leftDetails, onRightDeta
             goPrice={price}
             showDropdown={rightDetails.showDropdown}
             toggleDropdown={rightDetails.toggleDropdown}
+            tripType={tripType}
             leftDetails={leftDetails} // Pass left details as a prop
             rightDetails={rightDetails}
+
           />
         );
       })}

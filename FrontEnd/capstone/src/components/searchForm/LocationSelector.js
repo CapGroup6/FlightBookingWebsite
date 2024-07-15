@@ -34,6 +34,11 @@ const commonCities = [
 
 const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }) => {
   const [options, setOptions] = useState(commonCities);
+  const [selectId, setSelectId] = useState('');
+
+  useEffect(() => {
+    setSelectId(`location-select-${Math.floor(Math.random() * 1000)}`);
+  }, []);
 
   const handleInputChange = (inputValue) => {
     setUserInput(inputValue);
@@ -55,7 +60,7 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
-        setOptions(commonCities); // 如果API请求失败，仍显示commonCities
+        setOptions(commonCities);
       }
     };
 
@@ -65,7 +70,7 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      height: '40px',  
+      height: '40px',
       minHeight: '40px',
       width: '240px',
       display: 'flex',
@@ -73,18 +78,18 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
     }),
     valueContainer: (provided) => ({
       ...provided,
-      height: '40px', 
+      height: '40px',
       display: 'flex',
       alignItems: 'center'
     }),
     input: (provided) => ({
       ...provided,
-      margin: '0', 
-      padding: '0', 
+      margin: '0',
+      padding: '0',
     }),
     placeholder: (provided) => ({
       ...provided,
-      height: '40px', 
+      height: '40px',
       display: 'flex',
       alignItems: 'center'
     }),
@@ -111,6 +116,7 @@ const LocationSelector = ({ userInput, setUserInput, setLocation, locationType }
   return (
     <div className={styles.dateInputWrapper}>
       <Select
+        inputId={selectId}
         placeholder={locationType === "departure" ? "Leaving From" : "Going To"}
         onInputChange={handleInputChange}
         onChange={setLocation}
