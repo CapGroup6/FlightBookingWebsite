@@ -86,12 +86,13 @@ const SearchForm = ({ onSearch }) => {
     );
 
     setMatchingItineraries(matches);
+    const segments = selectedCard.itineraries[0].segments;
 
     // Extract left details from selectedCard
     const leftDetails = {
       cabin: selectedCard.travelerPricings[0].fareDetailsBySegment[0].cabin,
       validatingAirlineCodes: selectedCard.validatingAirlineCodes,
-      airlineNumber: selectedCard.itineraries[0].segments[0].number,
+      airlineNumber: segments.map(segment => segment.number),
       numberOfBookableSeats: selectedCard.numberOfBookableSeats,
       checkInWeight: selectedCard.travelerPricings[0].fareDetailsBySegment[0].includedCheckedBags.weight,
       refund: selectedCard.pricingOptions.refundableFare,
@@ -220,7 +221,7 @@ const SearchForm = ({ onSearch }) => {
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
               <Sort updateResults={updateResults} />
-              {showFilter && <Filter />}
+              {showFilter && <Filter tripType={tripType.value} apiResult={apiResults} />}
             </div>
             <div>
               <ResultCardLogic
@@ -233,7 +234,7 @@ const SearchForm = ({ onSearch }) => {
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
               <Sort updateResults={updateResults} />
-              {showFilter && <Filter tripType={tripType.value} />}
+              {showFilter && <Filter tripType={tripType.value} apiResult={apiResults} />}
             </div>
             <div className='flex flex-1 items-start justify-end'>
               <div className='flex flex-row'>
@@ -259,6 +260,9 @@ const SearchForm = ({ onSearch }) => {
           </div>
         )}
       </div>
+      <pre className="bg-gray-100 p-4 rounded overflow-auto" style={{ maxHeight: '300px' }}>
+        {JSON.stringify(apiResults, null, 2)}
+      </pre>
     </div>
   );
 };

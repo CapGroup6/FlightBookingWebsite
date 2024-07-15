@@ -23,6 +23,8 @@ const ResultRightLogic = ({ matchingItineraries, price, leftDetails, onRightDeta
     <div>
       {matchingItineraries.map((result, idx) => {
         let stopLocations = [];
+        //for so many airline numbers
+        const itineraries = result.itineraries;
         const segments = result.itineraries[1].segments;
         const firstSegment = segments[0];
         const lastSegment = segments[segments.length - 1];
@@ -38,15 +40,16 @@ const ResultRightLogic = ({ matchingItineraries, price, leftDetails, onRightDeta
         const formattedStopLocations = stopLocations.map((location, index) => `${stopoverDurations[index]} at ${location}`);
 
         const rightDetails = {
-          airline: capitalizeWords(firstSegment.airlineName),
+          airline: capitalizeWords(lastSegment.airlineName),
           flightNumber: firstSegment.number,
           departureTime: firstSegment.departure.at,
           arrivalTime: lastSegment.arrival.at,
-          departureLocation: firstSegment.departure.iataCode,
+          departureLocation: lastSegment.departure.iataCode,
           arrivalLocation: lastSegment.arrival.iataCode,
           cabin: travelerPricing.fareDetailsBySegment[0].cabin,
           validatingAirlineCodes: result.validatingAirlineCodes,
-          airlineNumber: firstSegment.number,
+          //so many airline numbers; fix the bug
+          airlineNumber: itineraries[1].segments.map(segment => segment.number),
           numberOfBookableSeats: result.numberOfBookableSeats,
           checkInWeight: travelerPricing.fareDetailsBySegment[0].includedCheckedBags.weight,
           refund: result.pricingOptions.refundableFare,

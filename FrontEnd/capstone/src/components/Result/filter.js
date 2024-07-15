@@ -1,12 +1,12 @@
-import * as React from "react";
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getAirlineLogoUrls } from '../Common/logoMap';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import React, { useState, useEffect } from 'react';
+import styles from '../../styles/SearchForm.module.css';
 import RangeSlider from '../Common/slider';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { getAirlineLogoUrls } from '../Common/logoMap';
 
-const airlines = ['Star Alliance', 'SkyTeam', 'Oneworld', 'Air Canada', 'Eastar Jet', 'Asiana Airlines'];
-const airports = ['YVR', 'LAX', 'HND', 'CDG', 'LHR'];
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+};
 
 const CheckboxItem = ({ id, value, isAirline, logoUrl }) => (
   <div className="flex items-center gap-5 mb-2">
@@ -19,7 +19,6 @@ const CheckboxItem = ({ id, value, isAirline, logoUrl }) => (
 const DropdownBox = ({ items, label, isAirline }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleDropdown = () => setIsOpen(!isOpen);
-  const airlineUrls = isAirline ? getAirlineLogoUrls(airlines) : [];
 
   return (
     <div className="">
@@ -36,9 +35,9 @@ const DropdownBox = ({ items, label, isAirline }) => {
             <CheckboxItem
               key={index}
               id={`item-${index}`}
-              value={item}
+              value={item.name ? capitalizeFirstLetter(item.name) : capitalizeFirstLetter(item)}
               isAirline={isAirline}
-              logoUrl={isAirline ? airlineUrls[index] : null}
+              logoUrl={item.logoUrl}
             />
           ))}
         </div>
@@ -47,23 +46,62 @@ const DropdownBox = ({ items, label, isAirline }) => {
   );
 };
 
-function Filter({ tripType, searchClicked }) {
-  const [stopoverList, setStopoverList] = useState([]);
-  const [error, setError] = useState(null);
+const Filter = ({ apiResult }) => {
+  const [filterData, setFilterData] = useState({
+    airlines: [],
+    stopoverCities: [],
+    airports: [],
+    numStopover: 0
+  });
+
+  const extractFilterData = (apiResult) => {
+    const airlines = new Set();
+    const stopoverCities = new Set();
+    const airports = new Set();
+    let numStopover = 0;
+
+    apiResult.forEach((offer) => {
+      offer.itineraries.forEach((itinerary) => {
+        const segments = itinerary.segments;
+        if (segments.length > 0) {
+          segments.forEach((segment) => {
+            airlines.add(capitalizeFirstLetter(segment.airlineName));
+          });
+
+          airports.add(capitalizeFirstLetter(segments[0].departure.airportName));
+          airports.add(capitalizeFirstLetter(segments[segments.length - 1].arrival.airportName));
+
+          if (segments.length > 1) {
+            for (let i = 0; i < segments.length - 1; i++) {
+              stopoverCities.add(capitalizeFirstLetter(segments[i].arrival.cityName));
+            }
+            numStopover += segments.length - 1;
+          }
+        }
+      });
+    });
+
+    const airlinesArray = Array.from(airlines);
+    const logoUrls = getAirlineLogoUrls(airlinesArray);
+    const airlinesWithLogos = airlinesArray.map((name, index) => ({
+      name,
+      logoUrl: logoUrls[index]
+    }));
+
+    return ({
+      airlines: airlinesWithLogos,
+      stopoverCities: Array.from(stopoverCities),
+      airports: Array.from(airports),
+      numStopover
+    });
+  };
 
   useEffect(() => {
-    const fetchStopoverList = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8080/result/getStopoverList?whichTrip=${tripType}`);
-        setStopoverList(response.data);
-      } catch (err) {
-        setError(err);
-      }
-    };
-
-    setStopoverList([]); // Reset stopover list
-    fetchStopoverList(); // Fetch new stopover list
-  }, [searchClicked, tripType]);
+    if (apiResult) {
+      const data = extractFilterData(apiResult);
+      setFilterData(data);
+    }
+  }, [apiResult]);
 
   return (
     <section className="flex flex-col pl-2 w-[95%]">
@@ -71,18 +109,17 @@ function Filter({ tripType, searchClicked }) {
         Preference
       </header>
       <main>
-        <DropdownBox items={airlines} label="Airlines" isAirline />
-        <DropdownBox items={stopoverList.map(stopover => `${stopover.location}`)} label="Stopover Cities" />
-        <DropdownBox items={stopoverList.map(stopover => `${stopover.airport}`)} label="Airports" />
+        <DropdownBox items={filterData.airlines} label="Airlines" isAirline />
+        <DropdownBox items={filterData.stopoverCities} label="Stopover Cities" />
+        <DropdownBox items={filterData.airports} label="Airports" />
         <h2 className="mt-5 text-m leading-5 text-black">Times</h2>
         <h3 className="mt-2 text-sm leading-5">Departure Time</h3>
         <RangeSlider />
         <h3 className="mt-2 text-sm leading-5">Arrival Time</h3>
         <RangeSlider />
-        {error && <p className="text-red-500">{error.message}</p>}
       </main>
     </section>
   );
-}
+};
 
 export default Filter;

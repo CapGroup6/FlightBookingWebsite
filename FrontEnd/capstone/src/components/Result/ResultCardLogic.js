@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import ResultsCard from "./ResultsCard"; // UI component for left results
 
 const ResultCardLogic = ({ apiResults, passenger, tripType }) => {
-  
-//transfer airline capiatalize
+
+  //transfer airline capiatalize
   const capitalizeWords = (str) => {
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
   };
@@ -36,7 +36,7 @@ const ResultCardLogic = ({ apiResults, passenger, tripType }) => {
 
           const stopoverDurations = calculateStopoverDuration(segments);
 
-          const travelerPricing = result.travelerPricings[0]; 
+          const travelerPricing = result.travelerPricings[0];
           const hasCarryOnbags = result.pricingOptions.includedCheckedBagsOnly;
 
           stopLocations = Array.isArray(stopLocations) ? stopLocations : [];
@@ -51,14 +51,14 @@ const ResultCardLogic = ({ apiResults, passenger, tripType }) => {
             arrivalLocation: lastSegment.arrival.iataCode,
             cabin: travelerPricing.fareDetailsBySegment[0].cabin,
             validatingAirlineCodes: result.validatingAirlineCodes,
-            airlineNumber: firstSegment.number,
+            airlineNumber: itinerary.segments.map(segment => segment.number),
             numberOfBookableSeats: result.numberOfBookableSeats,
             checkInWeight: travelerPricing.fareDetailsBySegment[0].includedCheckedBags.weight,
             refund: result.pricingOptions.refundableFare,
             restrict: result.pricingOptions.noRestrictionFare,
             penalty: result.pricingOptions.noPenaltyFare,
           };
-        
+
           return (
             <ResultsCard
               key={`${index}-${itineraryIndex}`}
