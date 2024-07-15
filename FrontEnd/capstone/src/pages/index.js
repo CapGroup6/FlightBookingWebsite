@@ -5,7 +5,7 @@ import BackgroundPicture from '../components/Common/BackgroundPicture';
 import DateExpansion from '../components/Result/DateExpansion';
 import ResultCard from '../components/Result/ResultsCard';
 import styles from '../styles/Home.module.css'; 
-
+import Sort from '../components/Result/Sort';
 
 function Home() {
   const [searchParams, setSearchParams] = useState(null);
@@ -24,7 +24,9 @@ function Home() {
           {/*{searchParams && (
              <DateExpansion baseDate={new Date(searchParams.departureDate)} />
           )}*/}
-
+        </div>
+        <div>
+          <Sort/>
         </div>
       </div>
     </div>
