@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Select from 'react-select';
+import axios from 'axios';
 import styles from '../../styles/SearchForm.module.css';
 
 const sortOptions = [
@@ -8,14 +9,27 @@ const sortOptions = [
   { label: 'Recommend', value: 'recommend' }
 ];
 
-const Sort = ({ sortCriteria, setSortCriteria }) => {
+const Sort = () => {
+  const [sortCriteria, setSortCriteria] = useState(null);
+  const [sortedData, setSortedData] = useState([]);
+
+  const handleSortChange = async (selectedOption) => {
+    setSortCriteria(selectedOption);
+    try {
+      const response = await axios.get(`http://localhost:8080/result/sort?sortBy=${selectedOption.value}`);
+      setSortedData(response.data);
+    } catch (error) {
+      console.error('Error fetching sorted data:', error);
+    }
+  };
+
   return (
     <div className={styles.noBorder}>
       <Select
         classNamePrefix="noBorder"
         placeholder="Sort By"
         value={sortCriteria}
-        onChange={setSortCriteria}
+        onChange={handleSortChange}
         options={sortOptions}
         styles={{
           control: (base) => ({
@@ -45,6 +59,14 @@ const Sort = ({ sortCriteria, setSortCriteria }) => {
           })
         }}
       />
+      {/* 展示 sortedData 中的原始 JSON 数据 */}
+      <div>
+        {sortedData.map((flight, index) => (
+          <pre key={index}>
+            {JSON.stringify(flight, null, 2)}
+          </pre>
+        ))}
+      </div>
     </div>
   );
 };

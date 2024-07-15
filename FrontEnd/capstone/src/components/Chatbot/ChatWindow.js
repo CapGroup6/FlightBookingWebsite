@@ -8,7 +8,10 @@ const ChatWindow = ({ conversations }) => {
       if (text.data) {
         return text.data;
       }
-      return JSON.stringify(text);
+      if (text.code && text.message) {
+        return `Error ${text.code}: ${text.message}`;
+      }
+      return JSON.stringify(text); // 将对象转换为字符串
     }
     return text;
   };

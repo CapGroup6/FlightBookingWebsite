@@ -35,7 +35,7 @@ const SearchForm = ({ onSearch }) => {
   const [leftDetails, setLeftDetails] = useState(null);
   const [rightDetails, setRightDetails] = useState(null);
 
-  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,10 +80,10 @@ const SearchForm = ({ onSearch }) => {
     setSelectedCard(selectedCard);
     setSelectedPrice(selectedCard.travelerPricings[0].price.total);
     // Filter matching results
-    const matches = apiResults.filter(result => 
+    const matches = apiResults.filter(result =>
       result.itineraries[0].segments[0].id === selectedCard.itineraries[0].segments[0].id
     );
-  
+
     setMatchingItineraries(matches);
 
     // Extract left details from selectedCard
@@ -99,11 +99,15 @@ const SearchForm = ({ onSearch }) => {
     };
     setLeftDetails(leftDetails);
   };
-  
+
   const handleRightDetails = (rightDetails) => {
     setRightDetails(rightDetails);
   };
-  
+
+  const handleSearchClick = () => {
+    setButtonClicked(prev => !prev);
+  };
+
 
   useEffect(() => {
     if (apiResults.length > 0) {
@@ -177,13 +181,13 @@ const SearchForm = ({ onSearch }) => {
                   srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/f858077400bf82af2a0b3714257676a245abea6f3371766742d88ff7c198f8a4?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
                   className="img"
                 />
-                 {tripType.value === 'Round-Trip' ? (
+                {tripType.value === 'Round-Trip' ? (
                   <img
                     loading="lazy"
                     srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/404b770a22f5348de34a603e903179f83823476f52b911502c7a740ddc20224a?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
                     className="img"
                   />
-                  ) : (null)
+                ) : (null)
                 }
               </div>
               <LocationSelector
@@ -203,7 +207,7 @@ const SearchForm = ({ onSearch }) => {
               />
             </div>
             <div className="absolute right-5 h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 hover:bg-sky-300 rounded-lg max-md:mt-0">
-              <button type="submit" className={`h-10 px-7 max-md:px-5  ${buttonClicked ? 'btn-clicked' : ''}`}>
+              <button type="submit" className={`h-10 px-7 max-md:px-5  ${buttonClicked ? 'btn-clicked' : ''}`} onClick={handleSearchClick}>
                 {loading ? 'Searching...' : 'Search'}
               </button>
             </div>
@@ -211,44 +215,44 @@ const SearchForm = ({ onSearch }) => {
         </div>
       </form>
       <div>
-      <h2>API Results</h2>
-      <pre>{JSON.stringify(apiResults, null, 2)}</pre>
-    </div>
+        <h2>API Results</h2>
+        <pre>{JSON.stringify(apiResults, null, 2)}</pre>
+      </div>
       <div>
-        { apiResults.length > 0 && tripType.value === 'One-Way' ? (
+        {apiResults.length > 0 && tripType.value === 'One-Way' ? (
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
-              {showFilter && <Filter />}
-            </div> 
+              {showFilter && <Filter tripType={tripType.value} searchClicked={buttonClicked} />}
+            </div>
             <div>
-              <ResultCardLogic 
-              apiResults={apiResults.filter(result => result.itineraries.length === 1)} 
-              passenger={passengersCount}
-              tripType={tripType.value}/>
+              <ResultCardLogic
+                apiResults={apiResults.filter(result => result.itineraries.length === 1)}
+                passenger={passengersCount}
+                tripType={tripType.value} searchClicked={buttonClicked} />
             </div>
           </div>
         ) : (
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
-              {showFilter && <Filter />}
+              {showFilter && <Filter tripType={tripType.value} />}
             </div>
             <div className='flex flex-1 items-start justify-end'>
               <div className='flex flex-row'>
                 <div className='flex flex-col'>
-                <ResultLeftLogic
-                  apiResults={apiResults.filter(result => result.itineraries.length === 2)}
-                  handleCardClick={handleCardClick}
-                  passenger={passengersCount}
-                  selectedCard={selectedCard}
-                />
+                  <ResultLeftLogic
+                    apiResults={apiResults.filter(result => result.itineraries.length === 2)}
+                    handleCardClick={handleCardClick}
+                    passenger={passengersCount}
+                    selectedCard={selectedCard}
+                  />
                 </div>
                 <div className='flex flex-col'>
-                <ResultRightLogic
-                  matchingItineraries={matchingItineraries.filter(result => result.itineraries.length === 2)}
-                  price = {selectedPrice}
-                  leftDetails={leftDetails} // Pass left details as a prop
-                  onRightDetailsUpdate={handleRightDetails} // Callback to update right details
-                />
+                  <ResultRightLogic
+                    matchingItineraries={matchingItineraries.filter(result => result.itineraries.length === 2)}
+                    price={selectedPrice}
+                    leftDetails={leftDetails} // Pass left details as a prop
+                    onRightDetailsUpdate={handleRightDetails} // Callback to update right details
+                  />
                 </div>
               </div>
             </div>

@@ -1,5 +1,5 @@
-import * as React from "react";
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 import { getAirlineLogoUrls } from '../components/Common/logoMap';
 
 const airlines = ['Star Alliance', 'SkyTeam', 'Oneworld', 'Air Canada', 'Eastar Jet', 'Asiana Airlines'];
@@ -61,13 +61,12 @@ const TimeSlider = ({ label }) => {
   };
 
   const handleDrag = (e, slider) => {
-    // Prevent default drag behavior
     e.preventDefault();
 
     const updatePosition = (moveEvent) => {
       const sliderRect = sliderRef.current.getBoundingClientRect();
       let newLeft = (moveEvent.clientX - sliderRect.left) / sliderRect.width * 24;
-      newLeft = Math.max(0, Math.min(newLeft, 24)); // Constrain between 0 and 24
+      newLeft = Math.max(0, Math.min(newLeft, 24));
       slider === 'left' ? setLeftValue(newLeft) : setRightValue(newLeft);
     };
 
@@ -110,7 +109,25 @@ const TimeSlider = ({ label }) => {
   );
 };
 
-function MyComponent() {
+const filter = ({ tripType }) => {
+  const [stopoverList, setStopoverList] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStopoverList = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/result/getStopoverList?whichTrip=${tripType}`, {
+          withCredentials: true,
+        });
+        setStopoverList(response.data);
+      } catch (err) {
+        setError(err);
+      }
+    };
+
+    fetchStopoverList();
+  }, [tripType]);
+
   return (
     <section className="flex flex-col max-w-[333px]">
       <header className="justify-center items-start px-9 py-3.5 w-full text-sm leading-5 text-center text-gray-500 whitespace-nowrap bg-sky-200">
@@ -123,9 +140,18 @@ function MyComponent() {
         <h2 className="mt-5 w-full text-sm leading-5 text-black">Times</h2>
         <TimeSlider label="Departure time" value="00:00-24:00" />
         <TimeSlider label="Arrival time" value="00:00-24:00" />
+        {error && <p className="text-red-500">{error.message}</p>}
+        <h2 className="mt-5 w-full text-sm leading-5 text-black">Stopover Cities</h2>
+        <ul>
+          {stopoverList.map((stopover, index) => (
+            <li key={index}>
+              {stopover.from} - {stopover.to}
+            </li>
+          ))}
+        </ul>
       </main>
     </section>
   );
-}
+};
 
-export default MyComponent;
+export default filter;
