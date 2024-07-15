@@ -18,6 +18,7 @@ const Sort = () => {
     try {
       const response = await axios.get(`http://localhost:8080/result/sort?sortBy=${selectedOption.value}`);
       setSortedData(response.data);
+      updateResults(sortedData);
     } catch (error) {
       console.error('Error fetching sorted data:', error);
     }
@@ -40,7 +41,7 @@ const Sort = () => {
             '&:hover': {
               border: 'none'
             },
-            width: '150px', // 调整宽度以适应内容
+            width: '150px',
           }),
           valueContainer: (base) => ({
             ...base,
@@ -59,14 +60,6 @@ const Sort = () => {
           })
         }}
       />
-      {/* 展示 sortedData 中的原始 JSON 数据 */}
-      <div>
-        {sortedData.map((flight, index) => (
-          <pre key={index}>
-            {JSON.stringify(flight, null, 2)}
-          </pre>
-        ))}
-      </div>
     </div>
   );
 };

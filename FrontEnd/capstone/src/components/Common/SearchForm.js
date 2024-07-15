@@ -10,6 +10,7 @@ import ResultCardLogic from '../Result/ResultCardLogic';
 import ResultLeftLogic from '../Result/ResultLeftLogic';
 import ResultRightLogic from '../Result/ResultRightLogic';
 import Filter from '../Result/filter';
+import Sort from '../Result/Sort';
 
 
 
@@ -104,13 +105,10 @@ const SearchForm = ({ onSearch }) => {
     setRightDetails(rightDetails);
   };
 
-<<<<<<< HEAD
-=======
-  const handleSearchClick = () => {
-    setButtonClicked(prev => !prev);
+  const updateResults = (updatedResults) => {
+    setResults(updatedResults);
   };
 
->>>>>>> origin/main
 
   useEffect(() => {
     if (apiResults.length > 0) {
@@ -210,7 +208,7 @@ const SearchForm = ({ onSearch }) => {
               />
             </div>
             <div className="absolute right-5 h-10 px-4 text-sm font-bold leading-6 text-center text-gray-500 capitalize whitespace-nowrap bg-sky-200 hover:bg-sky-300 rounded-lg max-md:mt-0">
-              <button type="submit" className={`h-10 px-7 max-md:px-5  ${buttonClicked ? 'btn-clicked' : ''}`} onClick={handleSearchClick}>
+              <button type="submit" className={`h-10 px-7 max-md:px-5  ${buttonClicked ? 'btn-clicked' : ''}`}>
                 {loading ? 'Searching...' : 'Search'}
               </button>
             </div>
@@ -225,26 +223,20 @@ const SearchForm = ({ onSearch }) => {
         {apiResults.length > 0 && tripType.value === 'One-Way' ? (
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
-<<<<<<< HEAD
+              <Sort updateResults={updateResults} />
               {showFilter && <Filter />}
-=======
-              {showFilter && <Filter tripType={tripType.value} searchClicked={buttonClicked} />}
->>>>>>> origin/main
             </div>
             <div>
               <ResultCardLogic
                 apiResults={apiResults.filter(result => result.itineraries.length === 1)}
                 passenger={passengersCount}
-<<<<<<< HEAD
                 tripType={tripType.value} />
-=======
-                tripType={tripType.value} searchClicked={buttonClicked} />
->>>>>>> origin/main
             </div>
           </div>
         ) : (
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
+              <Sort updateResults={updateResults} />
               {showFilter && <Filter tripType={tripType.value} />}
             </div>
             <div className='flex flex-1 items-start justify-end'>
@@ -261,10 +253,7 @@ const SearchForm = ({ onSearch }) => {
                   <ResultRightLogic
                     matchingItineraries={matchingItineraries.filter(result => result.itineraries.length === 2)}
                     price={selectedPrice}
-<<<<<<< HEAD
                     tripType={tripType.value}
-=======
->>>>>>> origin/main
                     leftDetails={leftDetails} // Pass left details as a prop
                     onRightDetailsUpdate={handleRightDetails} // Callback to update right details
                   />
