@@ -4,41 +4,46 @@ import { useRouter } from 'next/router';
 
 function Header() {
   const router = useRouter();
-  const [isChatbot, setIsChatbot] = useState(true);
+  const [isChatbot, setIsChatbot] = useState(router.pathname === "/chatbot");
 
   useEffect(() => {
-    // Check the current path to set the initial state
-    if (router.pathname === "/chatbot") {
-      setIsChatbot(false);
-    } else {
-      setIsChatbot(true);
-    }
-  }, [router.pathname]);
+    // Function to handle route change
+    const handleRouteChange = (url) => {
+      if (url === "/chatbot") {
+        setIsChatbot(true);
+      } else {
+        setIsChatbot(false);
+      }
+    };
 
-  const toggleSearchType = () => {
-    setIsChatbot(!isChatbot);
-  };
+    // Listen for route changes
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
 
   return (
     <header className="flex flex-col w-full mt-0 p-0 z-10">
       <div className="flex justify-between items-center w-full p-5 bg-white border-b">
         <div className="flex gap-2 items-center">
-          <button 
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl"
-            onClick={toggleSearchType}
-          >
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/e83753c221fd19ab205786cd31eeaaed84b32ac4285c65a98f5598031fba663f?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
-              className="w-5 aspect-square"
-              alt="AI Chatbot Icon"
-            />
-            <span>
-              <Link href={isChatbot ? "../chatbot" : ".."}>
-                {isChatbot ? "AI Chatbot" : "Traditional Search"}
-              </Link>
-            </span>
-          </button>
+          <Link href={isChatbot ? "../" : "../chatbot"}>
+            <button
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl"
+            >
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/e83753c221fd19ab205786cd31eeaaed84b32ac4285c65a98f5598031fba663f?apiKey=bfbc62932a264251916c1c27ced3ccfe&"
+                className="w-5 aspect-square"
+                alt="AI Chatbot Icon"
+              />
+              <span>
+                {isChatbot ? "Traditional Search" : "AI Chatbot"}
+              </span>
+            </button>
+          </Link>
         </div>
         <div className="flex gap-5 items-center text-gray-600 ml-auto z-10">
           <button className="text-xl">
