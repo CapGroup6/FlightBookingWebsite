@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatFlightDetails } from './formatFlightDetails';
 
 const ChatWindow = ({ conversations }) => {
   if (!conversations) return null;
@@ -6,12 +7,29 @@ const ChatWindow = ({ conversations }) => {
   const renderMessageText = (text) => {
     if (typeof text === 'object' && text !== null) {
       if (text.data) {
-        return text.data;
+        if (typeof text.data === 'string') {
+          try {
+            const parsedData = JSON.parse(text.data);
+            if (Array.isArray(parsedData)) {
+              return JSON.stringify(parsedData);
+            }
+          } catch (e) {
+            // If parsing fails, return the original string content
+            return text.data;
+          }
+        } else {
+          // If data is not a string, assume it's already a JSON object
+          return (
+            <div>
+              {formatFlightDetails(text.data)}
+            </div>
+          );
+        }
       }
       if (text.code && text.message) {
         return `Error ${text.code}: ${text.message}`;
       }
-      return JSON.stringify(text); // 将对象转换为字符串
+      return JSON.stringify(text);
     }
     return text;
   };
