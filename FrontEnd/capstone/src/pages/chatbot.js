@@ -42,7 +42,7 @@ function Chatbot() {
       messages: [...conversation.messages, newMessage],
     };
 
-    setConversations(prevConversations => 
+    setConversations(prevConversations =>
       prevConversations.map(conv => conv.id === conversation.id ? updatedConversation : conv)
     );
     setCurrentConversation(updatedConversation);
@@ -72,7 +72,7 @@ function Chatbot() {
           ...updatedConversation,
           messages: [...updatedConversation.messages, responseMessage],
         };
-        setConversations(prevConversations => 
+        setConversations(prevConversations =>
           prevConversations.map(conv => conv.id === conversation.id ? updatedConversationWithResponse : conv)
         );
         setCurrentConversation(updatedConversationWithResponse);
