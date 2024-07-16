@@ -217,10 +217,25 @@ const SearchForm = ({ onSearch }) => {
         </div>
       </form>
       <div>
+        {!showFilter &&
+          <div className="flex justify-center items-center h-80">
+            <div className="flex m-50">
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/e893a466a5127afac788e7257ebec62963300ee85e5a0d660b172777b5d3967a?apiKey=e35f36ff56764292afe21d9cb1dc1589&"
+                alt="Logo"
+                className="w-20 h-20"
+              />
+              <h1 className="ml-4 text-6xl font-bold text-black">
+                Flight<span>Searching</span>
+              </h1>
+            </div>
+          </div>
+        }
         {apiResults.length > 0 && tripType.value === 'One-Way' ? (
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
-              <Sort updateResults={updateResults} />
+              {showFilter && <Sort updateResults={updateResults} />}
               {showFilter && <Filter tripType={tripType.value} apiResult={apiResults} />}
             </div>
             <div>
@@ -233,7 +248,7 @@ const SearchForm = ({ onSearch }) => {
         ) : (
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
-              <Sort updateResults={updateResults} />
+              {showFilter && <Sort updateResults={updateResults} />}
               {showFilter && <Filter tripType={tripType.value} apiResult={apiResults} />}
             </div>
             <div className='flex flex-1 items-start justify-end'>
@@ -260,9 +275,6 @@ const SearchForm = ({ onSearch }) => {
           </div>
         )}
       </div>
-      <pre className="bg-gray-100 p-4 rounded overflow-auto" style={{ maxHeight: '300px' }}>
-        {JSON.stringify(apiResults, null, 2)}
-      </pre>
     </div>
   );
 };
