@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 
 function Login() {
 
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const router = useRouter(); 
@@ -24,7 +24,7 @@ function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
   
       const data = await response.json();
@@ -70,12 +70,12 @@ function Login() {
                 <h2 className="text-xl">Sign in</h2>
                 <input
                   type="text"
-                  id="email"
-                  name="email"
-                  placeholder="Email *"
+                  id="username"
+                  name="username"
+                  placeholder="Username *"
                   className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
                 <input

@@ -25,6 +25,7 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Form data being submitted:', formData); // 添加调试信息
     try {
       const response = await fetch('/api/register', {
         method: 'POST',
@@ -33,16 +34,27 @@ function Signup() {
         },
         body: JSON.stringify(formData),
       });
-      if (response.ok) {
+
+      const data = await response.json();
+      if (data.data && data.data.code === 200) {
         console.log('Registration successful');
         router.push('/Login/signupSuccess').catch((err) => console.error('Failed to redirect:', err)); 
       } else {
-        console.error('Registration failed');
+        handleSignupFailure(data.message || 'Register failed');
       }
     } catch (error) {
       console.error('Error:', error);
     }
+
+    function handleSignupFailure(errorMessage) {
+      console.error('Register failed:', errorMessage);
+      alert(errorMessage); 
+      setLoginError(errorMessage);
+    }
   };
+
+
+  
 
   return (
     <div className="pl-14 bg-white">
@@ -74,10 +86,28 @@ function Signup() {
                   onChange={handleChange}
                 />
                 <input
+                  type="username"
+                  id="username"
+                  name="username"
+                  placeholder="Username *"
+                  className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
+                  required
+                  onChange={handleChange}
+                />
+                <input
                   type="password"
                   id="password"
                   name="password"
                   placeholder="Password *"
+                  className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
+                  required
+                  onChange={handleChange}
+                />
+                <input
+                  type="phone"
+                  id="phone"
+                  name="phone"
+                  placeholder="Phone *"
                   className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
                   required
                   onChange={handleChange}
