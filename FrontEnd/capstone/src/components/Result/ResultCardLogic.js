@@ -5,7 +5,15 @@ const ResultCardLogic = ({ apiResults, passenger, tripType }) => {
 
   //transfer airline capiatalize
   const capitalizeWords = (str) => {
-    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+    try {
+      if (!str) {
+        throw new Error("Input string is empty or null");
+      }
+      return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+    } catch (error) {
+      console.error(error.message);
+      return "";
+    }    
   };
 
   const calculateStopoverDuration = (segments) => {
