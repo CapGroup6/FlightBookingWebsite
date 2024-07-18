@@ -34,6 +34,7 @@ function SignupSuccess() {
           <section className="flex gap-5 h-screen">
             <aside className="flex flex-col w-[80%]">
               <header className="flex flex-col mt-14">
+                <Link href="/">
                 <div className="flex gap-3 text-3xl font-bold">
                   <img
                     src="/images/airplane.png"
@@ -43,6 +44,7 @@ function SignupSuccess() {
                     FlightSearch
                   </h1>
                 </div>
+                </Link>
               </header>
               <div className="flex-grow flex items-center">
                 <form className="flex flex-col justify-content: space-between mx-auto my-auto">

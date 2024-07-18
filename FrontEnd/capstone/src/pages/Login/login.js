@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 
 function Login() {
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const router = useRouter(); 
@@ -24,7 +24,7 @@ function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
   
       const data = await response.json();
@@ -53,6 +53,7 @@ function Login() {
         <section className="flex gap-5 h-screen">
           <aside className="flex flex-col w-[40%]">
             <header className="flex flex-col mt-14">
+              <Link href="/">
               <div className="flex gap-3 text-3xl font-bold">
                 <img
                   src="/images/airplane.png"
@@ -62,18 +63,19 @@ function Login() {
                   FlightSearch
                 </h1>
               </div>
+              </Link>
             </header>
             <div className="flex-grow flex items-center">
               <form className="max-w-xs mx-auto my-auto" onSubmit={handleSubmit}>
                 <h2 className="text-xl">Sign in</h2>
                 <input
                   type="text"
-                  id="username"
-                  name="username"
-                  placeholder="Username *"
+                  id="email"
+                  name="email"
+                  placeholder="Email *"
                   className="p-2.5 mt-5 rounded border border-solid border-stone-300 w-full"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
                 <input
