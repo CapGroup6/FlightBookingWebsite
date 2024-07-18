@@ -44,7 +44,7 @@ const ResultRightLogic = ({ matchingItineraries, price, leftDetails, onRightDeta
           flightNumber: firstSegment.number,
           departureTime: firstSegment.departure.at,
           arrivalTime: lastSegment.arrival.at,
-          departureLocation: lastSegment.departure.iataCode,
+          departureLocation: firstSegment.departure.iataCode,
           arrivalLocation: lastSegment.arrival.iataCode,
           cabin: travelerPricing.fareDetailsBySegment[0].cabin,
           validatingAirlineCodes: result.validatingAirlineCodes,
