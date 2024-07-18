@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const capitalizeWords = (str) => {
+    if (!str) return ""
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
 };
 

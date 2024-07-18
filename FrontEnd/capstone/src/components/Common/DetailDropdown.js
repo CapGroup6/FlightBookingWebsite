@@ -33,7 +33,6 @@ const DetailDropdown = ({ visible, tripType, leftDetails, rightDetails }) => {
             <li><strong>No Penalties: </strong>{leftDetails.penalty ? 'Yes' : 'No'}</li>
             <div className='text-center'><strong>Return</strong></div>
             <li><strong>Cabin: </strong>{rightDetails.cabin}</li>
-            <li><strong>Airline: </strong>{rightDetails.validatingAirlineCodes.join(', ')}</li>
             {renderAirlineNumbers(rightDetails.validatingAirlineCodes, rightDetails.airlineNumber)}
             <li><strong>Number of Bookable Seats: </strong>{rightDetails.numberOfBookableSeats}</li>
             <li><strong>Check-In Weight: </strong>{rightDetails.checkInWeight}</li>
