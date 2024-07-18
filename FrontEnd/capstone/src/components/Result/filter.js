@@ -5,7 +5,15 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { getAirlineLogoUrls } from '../Common/logoMap';
 
 const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  try {
+    if (!string) {
+      throw new Error("Input string is empty or null");
+    }
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  } catch (error) {
+    console.error(error.message);
+    return "";
+  }  
 };
 
 const CheckboxItem = ({ id, value, isAirline, logoUrl }) => (
