@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../pages/Login/AuthContext'; 
+import { useAuth } from '../../pages/Login/AuthContext'; // 确保路径正确
+
 function Header() {
-  const { authState, logout } = useAuth(); 
+  const { authState, logout } = useAuth(); // 使用登录状态
   const router = useRouter();
   const [isChatbot, setIsChatbot] = useState(router.pathname === "/chatbot");
 
@@ -31,7 +32,7 @@ function Header() {
             </a>
           </Link>
         </div>
-        {authState ? (
+        {authState.user ? (
           <div className="flex gap-5 items-center text-gray-600 ml-auto z-10">
             <span>Welcome, {authState.user}</span>
             <button className="text-xl" onClick={logout}>
