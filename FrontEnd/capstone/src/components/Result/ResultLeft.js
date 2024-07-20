@@ -108,7 +108,7 @@ function ResultLeft({
           </div>
           <div className="flex flex-col">
             <div className="flex flex-col justify-center text-xs leading-6 text-center text-red-700 capitalize">
-              <div className="absolute right-7 top-1.5 justify-center px-2 py-px mt-1.5 rounded-lg">
+              <div className="absolute right-7 top-1.5 justify-center px-2 py-px rounded-lg">
                 {hasCarryOnbags ? (
                   <div className="justify-center self-start px-2 py-px ml-4 text-xs leading-6 text-center text-lime-700 capitalize rounded-lg bg-green-300 bg-opacity-60 max-md:ml-2.5 whitespace-nowrap">
                     carry-on bag
