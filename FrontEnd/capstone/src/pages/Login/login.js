@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useAuth } from './AuthContext';  // 确保正确引用 AuthContext
+import { useAuth } from './AuthContext'; 
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -24,7 +24,7 @@ function Login() {
 
             const data = await response.json();
             if (data.data && data.data.code === 200) {
-                login(username);  // 登录成功，更新上下文状态
+                login(data.data.data, username);  
                 router.push('/');
             } else {
                 setLoginError(data.message || 'Login failed');
@@ -40,11 +40,9 @@ function Login() {
             <section className="flex gap-5 h-screen">
                 <aside className="flex flex-col w-[40%]">
                     <header className="flex flex-col mt-14">
-                        <Link href="/">
-                            <a className="flex gap-3 text-3xl font-bold">
+                        <Link href="/" className="flex gap-3 text-3xl font-bold">
                                 <img src="/images/airplane.png" alt="Logo" />
                                 <h1>FlightSearch</h1>
-                            </a>
                         </Link>
                     </header>
                     <div className="flex-grow flex items-center">
@@ -79,8 +77,8 @@ function Login() {
                                 <img src="/images/ArrowForward.png" alt="forward arrow" className="my-auto" />
                             </button>
                             {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
-                            <Link href="./signup">
-                                <a className="py-2 mt-4 text-base uppercase bg-black rounded text-white w-full block text-center">Create New Account</a>
+                            <Link href="./signup" className="py-2 mt-4 text-base uppercase bg-black rounded text-white w-full block text-center">
+                                    Create New Account
                             </Link>
                         </form>
                     </div>
