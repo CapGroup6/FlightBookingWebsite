@@ -236,7 +236,7 @@ const SearchForm = ({ onSearch }) => {
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
               {showFilter && <Sort updateResults={updateResults} />}
-              {showFilter && <Filter tripType={tripType.value} apiResult={apiResults} />}
+              {showFilter && <Filter tripType={tripType.value} apiResult={apiResults} buttonClicked={buttonClicked} onFilterChange={updateResults}/>}
             </div>
             <div>
               <ResultCardLogic
@@ -249,7 +249,7 @@ const SearchForm = ({ onSearch }) => {
           <div className="flex flex-row gap-5">
             <div className="w-[80%] relative max-w-[350px]">
               {showFilter && <Sort updateResults={updateResults} />}
-              {showFilter && <Filter tripType={tripType.value} apiResult={apiResults} />}
+              {showFilter && <Filter tripType={tripType.value} apiResult={apiResults} buttonClicked={buttonClicked} onFilterChange={updateResults}/>}
             </div>
             <div className='flex flex-1 items-start justify-end'>
               <div className='flex flex-row'>
