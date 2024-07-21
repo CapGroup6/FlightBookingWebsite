@@ -15,7 +15,7 @@ const MultiValueRemove = () => null; // Hides the remove "x" button
 
 const ClearIndicator = () => null;
 
-const PassengerCount = ({ adults, setAdults, children, setChildren, infants, setInfants }) => {
+const PassengerCount = ({ adults, setAdults, children, setChildren }) => {
   const [selectId, setSelectId] = useState('');
 
   useEffect(() => {
@@ -44,30 +44,19 @@ const PassengerCount = ({ adults, setAdults, children, setChildren, infants, set
           <button type="button" onClick={() => setChildren(children + 1)}>+</button>
         </div>
       )
-    },
-    {
-      label: `Infants: ${infants}`,
-      value: 'infants',
-      customComponent: (
-        <div className={styles.counter}>
-          <button type="button" onClick={() => setInfants(Math.max(0, infants - 1))}>-</button>
-          <span>{infants}</span>
-          <button type="button" onClick={() => setInfants(infants + 1)}>+</button>
-        </div>
-      )
     }
   ];
 
   return (
     <Select
       inputId={selectId}
-      placeholder={`Adults: ${adults}, Children: ${children}, Infants: ${infants}`}
+      placeholder={`Adults: ${adults}, Children: ${children}`}
       components={{ Option, MultiValueRemove, ClearIndicator }} // Hides the "x" button
       options={passengerOptions}
       isMulti
       closeMenuOnSelect={false}
       hideSelectedOptions={false}
-      value={passengerOptions.filter(option => (option.value === 'adults' || option.value === 'children' || option.value === 'infants') && (option.value !== 'adults' || adults > 0) && (option.value !== 'children' || children > 0) && (option.value !== 'infants' || infants > 0))}
+      value={passengerOptions.filter(option => (option.value === 'adults' || option.value === 'children') && (option.value !== 'adults' || adults > 0) && (option.value !== 'children' || children > 0))}
       styles={{
         control: (provided) => ({
           ...provided,
