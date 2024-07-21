@@ -18,6 +18,7 @@ const commonCities = [
   { cityName: "Seoul", iataCode: "ICN", countryName: "South Korea" },
   { cityName: "Frankfurt", iataCode: "FRA", countryName: "Germany" },
   { cityName: "Singapore", iataCode: "SIN", countryName: "Singapore" },
+  { cityName: "Tokyo", iataCode: "HND", countryName: "Japan" },
   { cityName: "Bangkok", iataCode: "BKK", countryName: "Thailand" },
   { cityName: "Moscow", iataCode: "SVO", countryName: "Russia" },
   { cityName: "Vancouver", iataCode: "YVR", countryName: "Canada" },
